@@ -192,7 +192,7 @@ At the legal-limit safety threshold (16× baseline crash risk):
 | | 0.90 | 12 | 353 | 1.0 |
 | | 0.95 | 7 | 358 | 1.0 |
 
-**Interpretation:** Even with excellent forecasting performance (AUC = 0.95), patients with weekly seizures can only drive ~86 days per year (average of one every 4 days) to maintain crash risk at legal intoxication levels. Only patients with rare seizures (1/year) achieve near-daily driving with high-AUC algorithms.
+**Interpretation:** Even with excellent forecasting performance (AUC = 0.95), patients with weekly seizures can only drive ~86 days per year (average of one every 4 days) to maintain crash risk below legal intoxication levels. Only patients with rare seizures (1/year) achieve near-daily driving with high-AUC algorithms.
 
 ## Citation
 

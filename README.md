@@ -246,7 +246,7 @@ $$\text{AUC} = \Phi\left(\frac{m}{\sqrt{2}}\right)$$
 
 Therefore:
 
-$$m = \sqrt{2} \, \Phi^{-1}(\text{AUC})$$
+$$m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$$
 
 ---
 
@@ -280,7 +280,7 @@ We use a Poisson approximation to convert seizure frequency into daily seizure p
 
 By Bayes' rule, the probability of a seizure on a day labeled "safe" is:
 
-$$P(\text{seizure} | \text{safe}) = \frac{\Phi(t-m) \, p}{\Phi(t-m) \, p + \Phi(t)(1-p)}$$
+$$P(\text{seizure} | \text{safe}) = \frac{\Phi(t-m) \cdot p}{\Phi(t-m) \cdot p + \Phi(t)(1-p)}$$
 
 This combines:
 - The false negative rate: $\Phi(t-m)$
@@ -380,7 +380,7 @@ We compare three score-generating models, all calibrated to AUC ≈ 0.90:
 
 **1. Equal-variance binormal** (baseline):
 - Negatives: $N(0, 1)$
-- Positives: $N(m, 1)$ where $m = \sqrt{2} \, \Phi^{-1}(0.90) \approx 1.81$
+- Positives: $N(m, 1)$ where $m = \sqrt{2} \cdot \Phi^{-1}(0.90) \approx 1.81$
 
 **2. Unequal-variance binormal** (S-shaped):
 - Negatives: $N(0, 1)$
@@ -408,7 +408,7 @@ Where $\mu_1 = 2.4$ and $\sigma_1 = 1.4$ are chosen to achieve AUC ≈ 0.90.
 
 Posterior probability of seizure on a "safe" day:
 
-$$P(\text{seizure} | \text{safe}) = \frac{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \, p}{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \, p + \Phi(t)(1-p)}$$
+$$P(\text{seizure} | \text{safe}) = \frac{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \cdot p}{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \cdot p + \Phi(t)(1-p)}$$
 
 #### Mixture Model
 

@@ -243,6 +243,9 @@ $$p = 1 - e^{-r}$$
 - 1 seizure/month: $r = 1/30$, $p \approx 0.033$
 - 1 seizure/year: $r = 1/365$, $p \approx 0.0027$
 
+**Note on Poisson Approximation:**
+We use a Poisson approximation to convert seizure frequency into daily seizure probability for computational simplicity. Since our analysis depends only on the average daily probability and not on temporal clustering patterns, alternative stochastic models for seizure occurrence would yield equivalent results for individuals with the same average seizure frequency. Whether seizures are truly Poisson-distributed, clustered, or overdispersed does not affect the crash risk calculations, which depend only on the forecasting algorithm's performance (AUC) and the baseline rate.
+
 ---
 
 ### 5.4 Posterior Probability of Seizure on Safe Days

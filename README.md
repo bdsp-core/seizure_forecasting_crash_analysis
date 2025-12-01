@@ -1,88 +1,210 @@
 # Seizure Forecasting and Crash Risk Analysis
 
-This repository contains the analysis code and supplementary materials for a JAMA Neurology paper examining the relationship between seizure forecasting algorithm performance and driving safety.
+**Supplementary Materials for JAMA Neurology Paper**
 
-## Overview
+This repository contains the complete analysis code, mathematical methods, and supplementary materials examining the relationship between seizure forecasting algorithm performance and driving safety.
 
-This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC) and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk). The key finding: even high-performance forecasting algorithms require substantial driving restrictions for patients with frequent seizures.
+---
 
-## Repository Contents
+## Table of Contents
 
-- [`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb) - Jupyter notebook containing all analysis code
-- Figure PDFs:
-  - `Figure_1.pdf` - Main figure showing crash risk vs. warning days
-  - `Figure_S0.pdf` - Schematic of binormal forecast model
-  - `Figure_S1.pdf` - Minimum warning days vs. AUC
-  - `Figure_ROC_shapes.pdf` - ROC shape sensitivity analysis (main)
-  - `Figure_ROC_shapes_curves.pdf` - Comparison of ROC curve geometries
+### 1. [Overview](#1-overview)
+### 2. [Repository Contents](#2-repository-contents)
+### 3. [Key Results](#3-key-results)
+   - 3.1 [Main Findings Table](#31-main-findings-table)
+   - 3.2 [ROC Shape Sensitivity Analysis](#32-roc-shape-sensitivity-analysis)
+### 4. [Figures](#4-figures)
+   - 4.1 [Figure 1: Crash Risk vs. Days in Warning](#41-figure-1-crash-risk-vs-days-in-warning-per-year)
+   - 4.2 [Figure S0: Binormal Forecast Model](#42-figure-s0-binormal-forecast-model-schematic)
+   - 4.3 [Figure S1: Minimum Warning Days vs. AUC](#43-figure-s1-minimum-warning-days-required-for-legal-limit-safety)
+   - 4.4 [Figure ROC_shapes: Shape Sensitivity](#44-figure-roc_shapes-sensitivity-to-roc-curve-shape)
+   - 4.5 [Figure ROC_shapes_curves: Curve Comparison](#45-figure-roc_shapes_curves-comparison-of-roc-geometries)
+### 5. [Mathematical Methods](#5-mathematical-methods)
+   - 5.1 [Binormal ROC Model](#51-binormal-roc-model)
+   - 5.2 [Sensitivity and False Positive Rate](#52-sensitivity-and-false-positive-rate)
+   - 5.3 [Daily Seizure Probability](#53-daily-seizure-probability)
+   - 5.4 [Posterior Probability (Bayes' Rule)](#54-posterior-probability-of-seizure-on-safe-days)
+   - 5.5 [Crash Risk Calculation](#55-crash-risk-on-safe-days)
+   - 5.6 [Time in Warning](#56-time-in-warning)
+   - 5.7 [Legal-Limit Safety Threshold](#57-minimum-warning-days-for-legal-limit-safety)
+   - 5.8 [AUC Performance Curves](#58-minimum-warning-days-vs-auc-figure-s1)
+   - 5.9 [Reproducibility](#59-reproducibility)
+   - 5.10 [ROC Shape Analysis](#510-why-roc-shape-matters-and-why-it-doesnt)
+   - 5.11 [Alternative ROC Models](#511-alternative-roc-models-tested)
+   - 5.12 [Mathematical Formulations](#512-mathematical-formulations-of-alternative-roc-shapes)
+   - 5.13 [Impact on Conclusions](#513-impact-on-driving-safety-conclusions)
+### 6. [Discussion: Validity of Binormal Assumption](#6-discussion-validity-of-the-binormal-roc-assumption)
+### 7. [Running the Code](#7-running-the-code)
+### 8. [Citation & Contact](#8-citation-and-contact)
 
-## Key Figures
+---
 
-### Figure 1: Crash Risk vs. Days in Warning per Year
+## 1. Overview
+
+This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC) and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk).
+
+**Key finding:** Even high-performance forecasting algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. Only patients with rare seizures (≤1 per year) can achieve near-daily driving with excellent forecasting performance.
+
+---
+
+## 2. Repository Contents
+
+### Code
+- **[`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb)** - Complete Jupyter notebook with all analysis code
+  - Cell 0: Main analysis and Figure 1 generation
+  - Cell 1-3: Supplementary figures (S0, S1)
+  - Cell 4: ROC shape sensitivity analysis
+  - Cell 5-6: Extended AUC table for manuscript
+
+### Figures (PDF and PNG formats)
+- **`Figure_1`** - Crash risk vs. warning days (main analysis)
+- **`Figure_S0`** - Binormal forecast model schematic
+- **`Figure_S1`** - Minimum warning days vs. AUC
+- **`Figure_ROC_shapes`** - ROC shape sensitivity analysis
+- **`Figure_ROC_shapes_curves`** - ROC curve geometries comparison
+
+*PNG versions are displayed in this README; PDF versions are provided for publication.*
+
+---
+
+## 3. Key Results
+
+### 3.1 Main Findings Table
+
+**Driving Restrictions Required to Achieve Legal-Limit Crash Risk by Seizure Frequency and Forecasting Performance**
+
+At the legal-limit safety threshold (16× baseline crash risk):
+
+| Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
+|------------------|-----|-------------------|-------------------|------------------------|
+| **1/week** | 0.60 | — | — | Cannot reach safety threshold |
+| | 0.70 | 365 | 0 | ∞ |
+| | 0.80 | 365 | 0 | 59,333 |
+| | 0.90 | 358 | 7 | 55 |
+| | 0.95 | 314 | 51 | 7.2 |
+| | 0.99 | 159 | 206 | 1.8 |
+| **1/month** | 0.60 | — | — | Cannot reach safety threshold |
+| | 0.70 | 365 | 0 | 17,394,297 |
+| | 0.80 | 364 | 1 | 396 |
+| | 0.90 | 318 | 47 | 7.8 |
+| | 0.95 | 221 | 144 | 2.5 |
+| | 0.99 | 69 | 296 | 1.2 |
+| **1/year** | 0.60 | 365 | 0 | 680,859 |
+| | 0.70 | 349 | 16 | 23.1 |
+| | 0.80 | 238 | 127 | 2.9 |
+| | 0.90 | 97 | 268 | 1.4 |
+| | 0.95 | 38 | 327 | 1.1 |
+| | 0.99 | 5 | 360 | 1.0 |
+
+**Key Insights:**
+- **AUC < 0.70** is insufficient for practical driving policies at any seizure frequency
+- **AUC = 0.90** enables ~7 days/year for weekly seizures, ~47 days/year for monthly seizures, ~268 days/year for yearly seizures
+- **Even AUC = 0.99** (near-perfect) limits weekly seizure patients to ~56% of days
+- **Seizure frequency is the dominant factor** determining driving feasibility
+
+### 3.2 ROC Shape Sensitivity Analysis
+
+Comparison of driving days allowed per year across different ROC shapes (all AUC ≈ 0.90):
+
+| Seizure Frequency | Equal-variance binormal | S-shaped (unequal variance) | Hooked (mixture) |
+|------------------|------------------------|----------------------------|------------------|
+| **1/week** | 7 days | Cannot reach safety | 0 days |
+| **1/month** | 47 days | Cannot reach safety | 0 days |
+| **1/year** | 268 days | **288 days** | 223 days |
+
+**Key Observations:**
+1. **High seizure frequencies:** ROC shape doesn't matter—all models struggle
+2. **Low seizure frequency:** S-shaped ROC can outperform (288 vs 268 days/year)
+3. **Overall:** Limited AUC, not ROC geometry, is the fundamental barrier
+
+---
+
+## 4. Figures
+
+### 4.1 Figure 1: Crash Risk vs. Days in Warning per Year
 
 ![Figure 1](Figure_1.png)
 
-This figure shows how crash risk (relative to baseline) varies with the number of days per year a patient spends in "warning" (not allowed to drive) for three seizure frequencies and three AUC values (0.6, 0.8, 0.9).
+**Description:** This figure shows how crash risk (relative to baseline) varies with the number of days per year a patient spends in "warning" (not allowed to drive) for three seizure frequencies (1/week, 1/month, 1/year) and three AUC values (0.6, 0.8, 0.9).
 
 **Key features:**
-- Light green shaded region: "Safe" zone (below 1-drink equivalent)
-- Light yellow shaded region: "Caution" zone (1-4 drinks equivalent)
-- Light pink shaded region: "Unsafe" zone (above legal limit)
-- Black dashed vertical lines: Minimum warning days needed to reach legal-limit safety
-- Horizontal reference lines: Crash risk equivalents for alcohol consumption (1, 3, 4, 6 drinks)
+- **Light green region:** "Safe" zone (below 1-drink equivalent)
+- **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
+- **Light pink region:** "Unsafe" zone (above legal limit)
+- **Black dashed vertical lines:** Minimum warning days needed to reach legal-limit safety
+- **Horizontal reference lines:** Crash risk equivalents for alcohol (1, 3, 4, 6 drinks)
+- **Black curves:** Different AUC values (thicker lines = higher AUC)
 
-**Black curves** represent different AUC values (thicker lines = higher AUC), showing the fundamental trade-off between crash risk and driving restrictions.
+The fundamental trade-off: higher crash risk reduction requires more days in warning (fewer driving days).
 
-### Figure S0: Binormal Forecast Model Schematic
+---
+
+### 4.2 Figure S0: Binormal Forecast Model Schematic
 
 ![Figure S0](Figure_S0.png)
 
-Illustrates the statistical model underlying the primary analysis:
+**Description:** Illustrates the statistical model underlying the primary analysis.
+
+**Model components:**
 - Forecast scores on non-seizure days: N(0,1)
 - Forecast scores on seizure days: N(m,1)
 - Threshold *t* defines the operating point
+- Bayes' theorem combines sensitivity, specificity, and base rate to compute posterior seizure risk
 
-The Bayes' theorem box shows how forecast performance combines with baseline seizure probability to compute posterior seizure risk on "safe" days.
+This schematic shows how the forecasting algorithm separates seizure from non-seizure days and how Bayes' rule computes crash risk on "safe" days.
 
-### Figure S1: Minimum Warning Days Required for Legal-Limit Safety
+---
+
+### 4.3 Figure S1: Minimum Warning Days Required for Legal-Limit Safety
 
 ![Figure S1](Figure_S1.png)
 
-Shows the minimum number of warning days per year needed to achieve legal-limit driving safety as a function of AUC, for three seizure frequencies:
-- Solid line: 1 seizure/week
-- Dashed line: 1 seizure/month
-- Dotted line: 1 seizure/year
+**Description:** Shows the minimum number of warning days per year needed to achieve legal-limit driving safety as a function of AUC, for three seizure frequencies.
 
-The right y-axis converts warning days to maximum allowed driving days (365 − warning days). This figure demonstrates that achieving safety with high seizure frequencies requires extremely high AUC values.
+**Key elements:**
+- **Solid line:** 1 seizure/week
+- **Dashed line:** 1 seizure/month
+- **Dotted line:** 1 seizure/year
+- **Right y-axis:** Converts warning days to maximum allowed driving days (365 − warning days)
 
-### Figure ROC_shapes: Sensitivity to ROC Curve Shape
+This figure demonstrates that achieving safety with high seizure frequencies requires extremely high AUC values (>0.90).
+
+---
+
+### 4.4 Figure ROC_shapes: Sensitivity to ROC Curve Shape
 
 ![Figure ROC_shapes](Figure_ROC_shapes.png)
 
-This figure addresses the question: **"Do our conclusions depend on assuming a binormal (symmetric) ROC curve?"**
+**Question addressed:** *"Do our conclusions depend on assuming a binormal (symmetric) ROC curve?"*
 
-We compare three different ROC curve shapes, all calibrated to AUC ≈ 0.90:
+**Comparison:** Three different ROC curve shapes, all calibrated to AUC ≈ 0.90:
 
-1. **Equal-variance binormal** (black): The standard symmetric ROC curve used in the main analysis
-2. **Unequal-variance binormal** (blue): An S-shaped ROC curve arising when positive and negative classes have different variances
-3. **Mixture model** (red): A "hooked" ROC curve arising when the positive class is a mixture of easy-to-detect and hard-to-detect cases
+1. **Equal-variance binormal** (black): Standard symmetric ROC curve
+2. **Unequal-variance binormal** (blue): S-shaped ROC from different class variances
+3. **Mixture model** (red): "Hooked" ROC from heterogeneous positive class
 
 **Key finding:** While ROC shape affects the *specific number* of allowable driving days, it does not change the qualitative conclusion that high seizure frequencies require severe driving restrictions even with excellent forecasting (AUC = 0.90).
 
-### Figure ROC_shapes_curves: Comparison of ROC Geometries
+---
+
+### 4.5 Figure ROC_shapes_curves: Comparison of ROC Geometries
 
 ![Figure ROC_shapes_curves](Figure_ROC_shapes_curves.png)
 
-Shows the actual ROC curves for the three different models, all with AUC ≈ 0.90. Despite similar overall discriminative ability (AUC), the curves have visibly different shapes:
-- Equal-variance: Smooth, symmetric curve
-- S-shaped: Convex near (0,0), concave near (1,1)
-- Hooked: Rises quickly at low FPR, then flattens
+**Description:** Shows the actual ROC curves for the three different models, all with AUC ≈ 0.90.
 
-These shape differences lead to different optimal operating points, particularly for low-frequency seizures.
+**Shape characteristics:**
+- **Equal-variance:** Smooth, symmetric curve
+- **S-shaped:** Convex near (0,0), concave near (1,1)
+- **Hooked:** Rises quickly at low FPR, then flattens
 
-## Mathematical Methods
+Despite similar overall discriminative ability (AUC), the curves have visibly different shapes, leading to different optimal operating points, particularly for low-frequency seizures.
 
-### S1. Binormal ROC Model
+---
+
+## 5. Mathematical Methods
+
+### 5.1 Binormal ROC Model
 
 We model the forecast score $S$ as:
 
@@ -98,7 +220,9 @@ Therefore:
 
 $$m = \sqrt{2} \, \Phi^{-1}(\text{AUC})$$
 
-### S2. Sensitivity and FPR for Any Threshold
+---
+
+### 5.2 Sensitivity and False Positive Rate
 
 A day is labeled "warning" if $S \geq t$ and "safe" if $S < t$:
 
@@ -106,18 +230,22 @@ $$\text{Sensitivity} = 1 - \Phi(t - m)$$
 
 $$\text{FPR} = 1 - \Phi(t)$$
 
-### S3. Daily Seizure Probability
+---
+
+### 5.3 Daily Seizure Probability
 
 Using a Poisson rate $r$ seizures/day, the daily seizure probability is:
 
 $$p = 1 - e^{-r}$$
 
-For example:
+**Examples:**
 - 1 seizure/week: $r = 1/7$, $p \approx 0.134$
 - 1 seizure/month: $r = 1/30$, $p \approx 0.033$
 - 1 seizure/year: $r = 1/365$, $p \approx 0.0027$
 
-### S4. Posterior Probability of Seizure on "Safe" Days
+---
+
+### 5.4 Posterior Probability of Seizure on Safe Days
 
 By Bayes' rule, the probability of a seizure on a day labeled "safe" is:
 
@@ -128,9 +256,11 @@ This combines:
 - The true negative rate: $\Phi(t)$
 - The baseline daily seizure probability: $p$
 
-### S5. Crash Risk on Safe Days
+---
 
-Let $p_0$ be baseline crash risk (per mile driven) and $p_{sz}$ be the crash probability given a seizure while driving. The crash risk on days labeled "safe" is:
+### 5.5 Crash Risk on Safe Days
+
+Let $p_0$ be baseline crash risk and $p_{sz}$ be the crash probability given a seizure while driving:
 
 $$\text{CrashRisk} = P(\text{seizure} | \text{safe}) \cdot p_{sz} + [1 - P(\text{seizure} | \text{safe})] \cdot p_0$$
 
@@ -138,11 +268,13 @@ The crash risk multiplier (relative to baseline) is:
 
 $$\text{CrashMultiplier} = \frac{\text{CrashRisk}}{p_0}$$
 
-**Parameters used:**
+**Parameters:**
 - $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
 - $p_{sz} = 0.5$ (crash probability given seizure while driving)
 
-### S6. Time in Warning
+---
+
+### 5.6 Time in Warning
 
 The probability that a randomly selected day is labeled "warning" is:
 
@@ -156,7 +288,9 @@ Expected driving days per year:
 
 $$D_{\text{drive}} = 365 - D_{\text{warning}}$$
 
-### S7. Minimum Warning Days for Legal-Limit Safety
+---
+
+### 5.7 Minimum Warning Days for Legal-Limit Safety
 
 We identify thresholds $t$ where:
 
@@ -166,7 +300,9 @@ $$\text{CrashMultiplier} \leq 16$$
 
 The minimum $D_{\text{warning}}$ among these thresholds gives the operating point shown as black points in Figure 1.
 
-### S8. Minimum Warning Days vs AUC (Figure S1)
+---
+
+### 5.8 Minimum Warning Days vs AUC (Figure S1)
 
 For each AUC value and seizure frequency, we compute:
 
@@ -176,7 +312,9 @@ subject to the constraint that $\text{CrashMultiplier} \leq 16$.
 
 This yields the curves shown in Figure S1.
 
-### S9. Reproducibility
+---
+
+### 5.9 Reproducibility
 
 All computations use:
 - Closed-form normal distribution formulas
@@ -185,41 +323,47 @@ All computations use:
 
 The complete Python code is provided in [`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb) and will reproduce all figures exactly.
 
-### S10. Why ROC Shape Matters (and Why It Doesn't)
+---
+
+### 5.10 Why ROC Shape Matters (and Why It Doesn't)
 
 The binormal ROC model assumes equal variance in the score distributions for seizure and non-seizure days. While this is a simplification, it is:
 
-1. **Standard**: The binormal model is the most widely used parametric ROC representation in biomedical research
-2. **Tractable**: It allows closed-form computation of all operating characteristics
-3. **Optimistic**: For a given AUC, the equal-variance binormal ROC typically provides near-best-case sensitivity-specificity trade-offs
-4. **Appropriate for conceptual analysis**: Our question is "what can *any* forecasting algorithm with AUC = X achieve?", not "what does this specific empirical ROC curve imply?"
+1. **Standard**: Most widely used parametric ROC representation in biomedical research
+2. **Tractable**: Allows closed-form computation of all operating characteristics
+3. **Optimistic**: Typically provides near-best-case sensitivity-specificity trade-offs for a given AUC
+4. **Appropriate**: Ideal for conceptual analysis asking "what can *any* algorithm with AUC = X achieve?"
 
-However, real-world ROC curves can deviate from the idealized binormal shape due to:
-- Unequal variances between classes (producing S-shaped ROCs)
-- Mixture distributions (producing "hooked" ROCs)
-- Finite-sample effects (producing stepwise ROCs)
+However, real-world ROC curves can deviate due to:
+- Unequal variances between classes (S-shaped ROCs)
+- Mixture distributions (hooked ROCs)
+- Finite-sample effects (stepwise ROCs)
 
-To test robustness, we analyze alternative ROC shapes with the same AUC.
+**Our sensitivity analysis tests robustness to these deviations.**
 
-### S11. Alternative ROC Models Tested
+---
+
+### 5.11 Alternative ROC Models Tested
 
 We compare three score-generating models, all calibrated to AUC ≈ 0.90:
 
-1. **Equal-variance binormal** (baseline model):
-   - Negatives: $N(0, 1)$
-   - Positives: $N(m, 1)$ where $m = \sqrt{2} \, \Phi^{-1}(0.90) \approx 1.81$
+**1. Equal-variance binormal** (baseline):
+- Negatives: $N(0, 1)$
+- Positives: $N(m, 1)$ where $m = \sqrt{2} \, \Phi^{-1}(0.90) \approx 1.81$
 
-2. **Unequal-variance binormal** (S-shaped ROC):
-   - Negatives: $N(0, 1)$
-   - Positives: $N(2.4, 1.4)$
-   - The larger variance in positives creates an S-shaped ROC
+**2. Unequal-variance binormal** (S-shaped):
+- Negatives: $N(0, 1)$
+- Positives: $N(2.4, 1.4)$
+- Larger variance in positives creates S-shaped ROC
 
-3. **Mixture model** (hooked ROC):
-   - Negatives: $N(0, 1)$
-   - Positives: $0.7 \cdot N(2.5, 1) + 0.3 \cdot N(0.8, 1)$
-   - The mixture creates a "hooked" ROC that rises quickly then flattens
+**3. Mixture model** (hooked):
+- Negatives: $N(0, 1)$
+- Positives: $0.7 \cdot N(2.5, 1) + 0.3 \cdot N(0.8, 1)$
+- Mixture creates "hooked" ROC that rises quickly then flattens
 
-### S12. Mathematical Formulations of Alternative ROC Shapes
+---
+
+### 5.12 Mathematical Formulations of Alternative ROC Shapes
 
 #### Unequal-Variance Binormal Model
 
@@ -231,7 +375,7 @@ $$\text{FPR} = 1 - \Phi(t)$$
 
 Where $\mu_1 = 2.4$ and $\sigma_1 = 1.4$ are chosen to achieve AUC ≈ 0.90.
 
-The posterior probability of seizure on a "safe" day:
+Posterior probability of seizure on a "safe" day:
 
 $$P(\text{seizure} | \text{safe}) = \frac{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \, p}{\Phi\left(\frac{t - \mu_1}{\sigma_1}\right) \, p + \Phi(t)(1-p)}$$
 
@@ -243,35 +387,76 @@ $$\text{Sensitivity} = w \cdot \left[1 - \Phi(t - \mu_{\text{easy}})\right] + (1
 
 Where $w = 0.7$, $\mu_{\text{easy}} = 2.5$, and $\mu_{\text{hard}} = 0.8$.
 
-The probability of being below threshold for the positive class:
+Probability of being below threshold for the positive class:
 
 $$P(S < t | \text{seizure}) = w \cdot \Phi(t - \mu_{\text{easy}}) + (1-w) \cdot \Phi(t - \mu_{\text{hard}})$$
 
-This is used in Bayes' rule to compute crash risk on safe days.
+---
 
-### S13. Impact on Driving Safety Conclusions
+### 5.13 Impact on Driving Safety Conclusions
 
 The ROC shape sensitivity analysis reveals nuanced but important findings:
 
 **At high seizure frequencies (weekly or monthly):**
 - All ROC shapes struggle to achieve safe driving
-- The mixture model is most conservative (fewest allowed driving days)
-- The S-shaped ROC often cannot reach the safety threshold at all
-- **Conclusion**: Limited discriminative ability, not ROC shape, is the barrier
+- Mixture model is most conservative (fewest allowed driving days)
+- S-shaped ROC often cannot reach the safety threshold at all
+- **Conclusion:** Limited discriminative ability, not ROC shape, is the barrier
 
 **At low seizure frequency (yearly):**
-- ROC shape has a more substantial impact
+- ROC shape has more substantial impact
 - S-shaped ROC can outperform equal-variance binormal (288 vs 268 days/year)
 - Mixture model is more conservative (223 days/year)
-- **Conclusion**: At low frequencies and high AUC, shape affects *how many* driving days, but all models permit substantial driving
+- **Conclusion:** At low frequencies and high AUC, shape affects *how many* driving days, but all models permit substantial driving
 
 **Overall interpretation:**
-- Using the equal-variance binormal model is a reasonable, standard approach
+- Using the equal-variance binormal model is reasonable and standard
 - It tends to give the forecasting algorithm the "benefit of the doubt"
-- Our main conclusions about the difficulty of safe forecasting-based driving policies are robust to ROC shape assumptions
-- For safety-critical applications, the overall discriminative ability (AUC) matters far more than the fine-grained ROC geometry
+- Main conclusions about difficulty of safe forecasting-based driving policies are **robust to ROC shape assumptions**
+- For safety-critical applications, **overall discriminative ability (AUC) matters far more than fine-grained ROC geometry**
 
-## Running the Code
+---
+
+## 6. Discussion: Validity of the Binormal ROC Assumption
+
+### Is the binormal model a reasonable simplification?
+
+**Yes, for several reasons:**
+
+1. **Standard statistical approximation**: Widely used in biomedical research, diagnostic testing, and signal detection theory
+
+2. **Mathematically tractable**: Closed-form expressions enable transparent, reproducible analysis without simulation
+
+3. **Generally optimistic**: For a given AUC, equal-variance binormal ROC tends to offer near-best-case sensitivity-specificity trade-offs
+
+4. **Appropriate for conceptual analysis**: Our paper addresses "what level of performance (AUC) is needed for safe driving decisions?"—not "how does this specific empirical ROC curve perform?"
+
+### What about real-world ROC curves that aren't binormal?
+
+Empirical ROC curves can indeed deviate from binormal shape due to:
+- Unequal variances between seizure and non-seizure score distributions
+- Mixture distributions (subpopulations of easy vs. hard-to-predict seizures)
+- Nonlinearities in underlying physiological signals
+- Finite-sample effects
+
+**However, our sensitivity analysis shows these deviations do not undermine the main conclusions:**
+
+- At **high seizure frequencies** (weekly/monthly), all ROC shapes—including those more optimistic than binormal—fail to support frequent safe driving even at AUC = 0.90
+- At **low seizure frequency** (yearly), all ROC shapes with AUC = 0.90 permit substantial driving, though exact days vary by shape
+- The fundamental barrier is **limited discriminative ability (AUC)**, not detailed ROC geometry
+
+### Recommendations for algorithm developers
+
+If you are developing a seizure forecasting algorithm:
+
+1. **Aim for AUC ≥ 0.90** as a minimum for driving applications
+2. **Characterize your empirical ROC shape**—if it's S-shaped or hooked, this may affect optimal operating points
+3. **For patients with frequent seizures**, even AUC = 0.90 may be insufficient for safe, practical driving policies
+4. **For patients with rare seizures**, AUC ≥ 0.90 can support meaningful driving opportunities, and ROC shape becomes more important for optimization
+
+---
+
+## 7. Running the Code
 
 ### Requirements
 
@@ -293,109 +478,43 @@ Or run all cells programmatically:
 jupyter nbconvert --to notebook --execute crashes_vs_TiW.ipynb
 ```
 
-The notebook generates five PDF figures:
-- `Figure_1.pdf`
-- `Figure_S0.pdf`
-- `Figure_S1.pdf`
-- `Figure_ROC_shapes.pdf`
-- `Figure_ROC_shapes_curves.pdf`
+### Outputs
 
-## Key Results
+The notebook generates:
+- **Five PDF figures** (high-resolution for publication)
+- **Five PNG figures** (for display on GitHub)
+- **Comprehensive table** (tab-delimited, ready for Word)
+- **Detailed statistics** for all AUC values and seizure frequencies
 
-### Main Analysis: Equal-Variance Binormal ROC
+**Figure files:**
+- `Figure_1.pdf/png`
+- `Figure_S0.pdf/png`
+- `Figure_S1.pdf/png`
+- `Figure_ROC_shapes.pdf/png`
+- `Figure_ROC_shapes_curves.pdf/png`
 
-At the legal-limit safety threshold (16× baseline crash risk):
+---
 
-| Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
-|------------------|-----|-------------------|-------------------|------------------------|
-| **1/week** | 0.60 | — | — | Cannot reach safety threshold |
-| | 0.80 | 365 | 0 | 59,333 |
-| | 0.90 | 358 | 7 | 55 |
-| **1/month** | 0.60 | — | — | Cannot reach safety threshold |
-| | 0.80 | 364 | 1 | 396 |
-| | 0.90 | 318 | 47 | 8 |
-| **1/year** | 0.60 | 365 | 0 | 680,859 |
-| | 0.80 | 238 | 127 | 3 |
-| | 0.90 | 97 | 268 | 1.4 |
+## 8. Citation and Contact
 
-**Interpretation:** Even with high forecasting performance (AUC = 0.90), patients with weekly seizures can only drive ~7 days per year (average of one every 55 days) to maintain crash risk at legal intoxication levels. Patients with monthly seizures achieve ~47 driving days per year (one every 8 days) at AUC = 0.90. Only patients with rare seizures (1/year) achieve frequent driving opportunities with high-AUC algorithms, with 268 driving days per year at AUC = 0.90.
-
-### ROC Shape Sensitivity Analysis: AUC ≈ 0.90
-
-Comparison of driving days allowed per year across different ROC shapes:
-
-| Seizure Frequency | Equal-variance binormal | S-shaped (unequal variance) | Hooked (mixture) |
-|------------------|------------------------|----------------------------|------------------|
-| **1/week** | 7 days | Cannot reach safety | 0 days |
-| **1/month** | 47 days | Cannot reach safety | 0 days |
-| **1/year** | 268 days | **288 days** | 223 days |
-
-**Key observations at AUC = 0.90:**
-
-1. **For weekly seizures**: Only the equal-variance binormal allows *any* driving (7 days/year). The S-shaped ROC cannot reach the safety threshold, and the mixture model allows essentially no driving. This demonstrates that high seizure frequencies are problematic regardless of ROC shape.
-
-2. **For monthly seizures**: Similar pattern—only the equal-variance binormal permits reasonable driving (47 days/year). Other ROC shapes are too conservative or cannot achieve safety.
-
-3. **For yearly seizures**: All three ROC shapes allow substantial driving, but with important differences:
-   - The **S-shaped ROC performs best** (288 days/year = 79% of days)
-   - The **equal-variance binormal** is in the middle (268 days/year = 73% of days)
-   - The **mixture model is most conservative** (223 days/year = 61% of days)
-
-**Why does the S-shaped ROC perform better for low-frequency seizures?**
-
-At low base rates (yearly seizures), the optimal strategy is to achieve high specificity without requiring extreme sensitivity. The S-shaped ROC, due to its unequal variance structure, can achieve excellent specificity at moderate sensitivity levels—exactly what's needed when seizures are rare.
-
-**Bottom line:**
-- **Shape matters more at higher seizure frequencies**, where all models struggle
-- At **low frequencies with high AUC**, shape affects the *magnitude* of benefit, but all models support driving
-- The **equal-variance binormal is a reasonable middle ground** and is often optimistic
-- Our conclusions about the fundamental challenges of forecasting-based driving policies are **robust to ROC shape assumptions**
-
-## Discussion: Validity of the Binormal ROC Assumption
-
-### Is the binormal model a reasonable simplification?
-
-**Yes, for several reasons:**
-
-1. **It's a standard statistical approximation**: The binormal ROC model is widely used in biomedical research, diagnostic testing, and signal detection theory. It provides a clean, parametric representation of classifier performance.
-
-2. **It's mathematically tractable**: Closed-form expressions for sensitivity, specificity, and posterior probabilities enable transparent, reproducible analysis without simulation.
-
-3. **It's generally optimistic**: For a given AUC, the equal-variance binormal ROC tends to offer near-best-case sensitivity-specificity trade-offs. Using this model gives the forecasting algorithm the benefit of the doubt.
-
-4. **It's appropriate for conceptual analysis**: Our paper addresses the question "what level of performance (AUC) is needed for safe driving decisions?"—not "how does this specific empirical ROC curve perform?" The binormal model is ideal for this conceptual analysis.
-
-### What about real-world ROC curves that aren't binormal?
-
-Empirical ROC curves can indeed deviate from the binormal shape due to:
-- Unequal variances between seizure and non-seizure score distributions
-- Mixture distributions (subpopulations of easy vs. hard-to-predict seizures)
-- Nonlinearities in the underlying physiological signals
-- Finite-sample effects
-
-**However, our sensitivity analysis shows that these deviations do not undermine the main conclusions:**
-
-- At **high seizure frequencies** (weekly/monthly), all ROC shapes—including those that are more optimistic than binormal—fail to support frequent safe driving even at AUC = 0.90
-- At **low seizure frequency** (yearly), all ROC shapes with AUC = 0.90 permit substantial driving, though the exact number of days varies by shape
-- The fundamental barrier is **limited discriminative ability (AUC)**, not the detailed ROC geometry
-
-### Recommendation for forecasting algorithm developers
-
-If you are developing a seizure forecasting algorithm:
-
-1. **Aim for AUC ≥ 0.90** as a minimum for driving applications
-2. **Characterize your empirical ROC shape**—if it's S-shaped or hooked, this may affect optimal operating points
-3. **For patients with frequent seizures**, even AUC = 0.90 may be insufficient for safe, practical driving policies
-4. **For patients with rare seizures**, AUC ≥ 0.90 can support meaningful driving opportunities, and ROC shape becomes more important for optimization
-
-## Citation
+### Citation
 
 [Citation information will be added upon publication]
 
-## License
+### License
 
 See [LICENSE](LICENSE) file for details.
 
-## Contact
+### Contact
 
-For questions or issues, please open a GitHub issue or contact the authors.
+For questions or issues, please:
+- Open a [GitHub issue](https://github.com/bdsp-core/seizure_forecasting_crash_analysis/issues)
+- Contact the authors
+
+### Repository
+
+**GitHub:** https://github.com/bdsp-core/seizure_forecasting_crash_analysis
+
+---
+
+*Last updated: November 2024*

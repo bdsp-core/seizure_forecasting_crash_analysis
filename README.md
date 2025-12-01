@@ -14,11 +14,12 @@ This repository contains the complete analysis code, mathematical methods, and s
    - 3.1 [Main Findings Table](#31-main-findings-table)
    - 3.2 [ROC Shape Sensitivity Analysis](#32-roc-shape-sensitivity-analysis)
 ### 4. [Figures](#4-figures)
-   - 4.1 [Figure 1: Crash Risk vs. Days in Warning](#41-figure-1-crash-risk-vs-days-in-warning-per-year)
-   - 4.2 [Figure S0: Binormal Forecast Model](#42-figure-s0-binormal-forecast-model-schematic)
-   - 4.3 [Figure S1: Minimum Warning Days vs. AUC](#43-figure-s1-minimum-warning-days-required-for-legal-limit-safety)
-   - 4.4 [Figure ROC_shapes: Shape Sensitivity](#44-figure-roc_shapes-sensitivity-to-roc-curve-shape)
-   - 4.5 [Figure ROC_shapes_curves: Curve Comparison](#45-figure-roc_shapes_curves-comparison-of-roc-geometries)
+   - 4.1 [Figure 1: Driving Days vs. AUC (Main)](#41-figure-1-driving-days-per-year-vs-auc-main-text)
+   - 4.2 [Figure 1 (Supp): Crash Risk vs. Days in Warning](#42-figure-1-supplementary-crash-risk-vs-days-in-warning-per-year)
+   - 4.3 [Figure S0: Binormal Forecast Model](#43-figure-s0-binormal-forecast-model-schematic)
+   - 4.4 [Figure S1: Minimum Warning Days vs. AUC](#44-figure-s1-minimum-warning-days-required-for-legal-limit-safety)
+   - 4.5 [Figure ROC_shapes: Shape Sensitivity](#45-figure-roc_shapes-sensitivity-to-roc-curve-shape)
+   - 4.6 [Figure ROC_shapes_curves: Curve Comparison](#46-figure-roc_shapes_curves-comparison-of-roc-geometries)
 ### 5. [Mathematical Methods](#5-mathematical-methods)
    - 5.1 [Binormal ROC Model](#51-binormal-roc-model)
    - 5.2 [Sensitivity and False Positive Rate](#52-sensitivity-and-false-positive-rate)
@@ -51,13 +52,18 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 ### Code
 - **[`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb)** - Complete Jupyter notebook with all analysis code
-  - Cell 0: Main analysis and Figure 1 generation
-  - Cell 1-3: Supplementary figures (S0, S1)
-  - Cell 4: ROC shape sensitivity analysis
-  - Cell 5-6: Extended AUC table for manuscript
+  - Cell 0: Original Figure 1 (crash risk vs. warning days)
+  - Cell 1: Empty
+  - Cell 2: **NEW** - Figure 1 Main (driving days vs. AUC) for main text
+  - Cell 3: Figure S1 (minimum warning days vs. AUC)
+  - Cell 4: Figure S0 (binormal model schematic)
+  - Cell 5: ROC shape sensitivity analysis
+  - Cell 6: Markdown for extended AUC table
+  - Cell 7: Extended AUC table code
 
 ### Figures (PDF and PNG formats)
-- **`Figure_1`** - Crash risk vs. warning days (main analysis)
+- **`Figure_1_Main`** - **NEW** - Driving days/year vs. AUC (main text figure)
+- **`Figure_1`** - Crash risk vs. warning days (supplementary)
 - **`Figure_S0`** - Binormal forecast model schematic
 - **`Figure_S1`** - Minimum warning days vs. AUC
 - **`Figure_ROC_shapes`** - ROC shape sensitivity analysis
@@ -121,25 +127,47 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ## 4. Figures
 
-### 4.1 Figure 1: Crash Risk vs. Days in Warning per Year
+### 4.1 Figure 1: Driving Days per Year vs. AUC (Main Text)
 
-![Figure 1](Figure_1.png)
+![Figure 1 Main](Figure_1_Main.png)
 
-**Description:** This figure shows how crash risk (relative to baseline) varies with the number of days per year a patient spends in "warning" (not allowed to drive) for three seizure frequencies (1/week, 1/month, 1/year) and three AUC values (0.6, 0.8, 0.9).
+**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline).
 
 **Key features:**
-- **Light green region:** "Safe" zone (below 1-drink equivalent)
-- **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
-- **Light pink region:** "Unsafe" zone (above legal limit)
-- **Black dashed vertical lines:** Minimum warning days needed to reach legal-limit safety
-- **Horizontal reference lines:** Crash risk equivalents for alcohol (1, 3, 4, 6 drinks)
-- **Black curves:** Different AUC values (thicker lines = higher AUC)
+- **Three colored curves:** Show relationship between AUC and safe driving days for different seizure frequencies
+  - Green: 1 seizure/year
+  - Blue: 1 seizure/month
+  - Orange: 1 seizure/week
+- **Filled circles:** Mark key AUC values (0.60, 0.70, 0.80, 0.90, 0.95, 0.99)
+- **Smooth curves:** Calculated analytically using equal-variance binormal ROC model with Bayes' theorem
 
-The fundamental trade-off: higher crash risk reduction requires more days in warning (fewer driving days).
+**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. For weekly seizures, only ~7 days/year are permitted; for yearly seizures, ~268 days/year.
 
 ---
 
-### 4.2 Figure S0: Binormal Forecast Model Schematic
+### 4.2 Figure 1 (Supplementary): Crash Risk vs. Days in Warning per Year
+
+![Figure 1](Figure_1.png)
+
+**Description:** Crash risk when driving after a negative seizure forecast, as a function of time in warning. Each panel shows crash risk for patients with different baseline seizure frequencies: 1 seizure per week (top), 1 seizure per month (middle), and 1 seizure per year (bottom).
+
+**Key features:**
+- **Black curves:** Algorithms with AUROC = 0.60, 0.80, and 0.90 (thicker lines = higher AUC)
+- **X-axis:** Days per year the algorithm advises against driving ("time in warning")
+- **Y-axis:** Crash risk as a multiple of baseline sober driving risk
+- **Horizontal dashed lines:** Crash risks equivalent to driving after 1, 3, 4 (legal limit at 0.08% BAC), and 6 alcoholic drinks
+- **Black circles:** Minimum warning time required to achieve the legal-limit threshold (~16× baseline)
+- **Light green region:** "Safe" zone (below 1-drink equivalent)
+- **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
+- **Light pink region:** "Unsafe" zone (above legal limit)
+
+**Calculations:** Crash risk calculated assuming 50% probability of crash given a seizure while driving and baseline crash risk of 1.5 × 10⁻⁵ per trip. Alcohol-related relative risks derived from Zador et al. (2000), with risk approximately doubling per 0.02% increase in BAC.
+
+**Trade-off:** Higher crash risk reduction requires more days in warning (fewer driving days).
+
+---
+
+### 4.3 Figure S0: Binormal Forecast Model Schematic
 
 ![Figure S0](Figure_S0.png)
 
@@ -155,7 +183,7 @@ This schematic shows how the forecasting algorithm separates seizure from non-se
 
 ---
 
-### 4.3 Figure S1: Minimum Warning Days Required for Legal-Limit Safety
+### 4.4 Figure S1: Minimum Warning Days Required for Legal-Limit Safety
 
 ![Figure S1](Figure_S1.png)
 
@@ -171,7 +199,7 @@ This figure demonstrates that achieving safety with high seizure frequencies req
 
 ---
 
-### 4.4 Figure ROC_shapes: Sensitivity to ROC Curve Shape
+### 4.5 Figure ROC_shapes: Sensitivity to ROC Curve Shape
 
 ![Figure ROC_shapes](Figure_ROC_shapes.png)
 
@@ -187,7 +215,7 @@ This figure demonstrates that achieving safety with high seizure frequencies req
 
 ---
 
-### 4.5 Figure ROC_shapes_curves: Comparison of ROC Geometries
+### 4.6 Figure ROC_shapes_curves: Comparison of ROC Geometries
 
 ![Figure ROC_shapes_curves](Figure_ROC_shapes_curves.png)
 

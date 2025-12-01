@@ -15,11 +15,11 @@ This repository contains the complete analysis code, mathematical methods, and s
    - 3.2 [ROC Shape Sensitivity Analysis](#32-roc-shape-sensitivity-analysis)
 ### 4. [Figures](#4-figures)
    - 4.1 [Figure 1: Driving Days vs. AUC (Main)](#41-figure-1-driving-days-per-year-vs-auc-main-text)
-   - 4.2 [Figure 1 (Supp): Crash Risk vs. Days in Warning](#42-figure-1-supplementary-crash-risk-vs-days-in-warning-per-year)
-   - 4.3 [Figure S0: Binormal Forecast Model](#43-figure-s0-binormal-forecast-model-schematic)
-   - 4.4 [Figure S1: Minimum Warning Days vs. AUC](#44-figure-s1-minimum-warning-days-required-for-legal-limit-safety)
-   - 4.5 [Figure ROC_shapes: Shape Sensitivity](#45-figure-roc_shapes-sensitivity-to-roc-curve-shape)
-   - 4.6 [Figure ROC_shapes_curves: Curve Comparison](#46-figure-roc_shapes_curves-comparison-of-roc-geometries)
+   - 4.2 [Figure S1: Crash Risk vs. Days in Warning](#42-figure-s1-crash-risk-vs-days-in-warning-per-year)
+   - 4.3 [Figure S2: Binormal Forecast Model](#43-figure-s2-binormal-forecast-model-schematic)
+   - 4.4 [Figure S3: Minimum Warning Days vs. AUC](#44-figure-s3-minimum-warning-days-required-for-legal-limit-safety)
+   - 4.5 [Figure S4: ROC Shape Sensitivity](#45-figure-s4-sensitivity-to-roc-curve-shape)
+   - 4.6 [Figure S5: ROC Curve Comparison](#46-figure-s5-comparison-of-roc-geometries)
 ### 5. [Mathematical Methods](#5-mathematical-methods)
    - 5.1 [Binormal ROC Model](#51-binormal-roc-model)
    - 5.2 [Sensitivity and False Positive Rate](#52-sensitivity-and-false-positive-rate)
@@ -52,22 +52,22 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 ### Code
 - **[`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb)** - Complete Jupyter notebook with all analysis code
-  - Cell 0: Original Figure 1 (crash risk vs. warning days)
+  - Cell 0: Figure S1 (crash risk vs. warning days)
   - Cell 1: Empty
-  - Cell 2: **NEW** - Figure 1 Main (driving days vs. AUC) for main text
-  - Cell 3: Figure S1 (minimum warning days vs. AUC)
-  - Cell 4: Figure S0 (binormal model schematic)
-  - Cell 5: ROC shape sensitivity analysis
+  - Cell 2: Figure 1 (driving days vs. AUC) for main text
+  - Cell 3: Figure S3 (minimum warning days vs. AUC)
+  - Cell 4: Figure S2 (binormal model schematic)
+  - Cell 5: ROC shape sensitivity analysis (Figures S4 and S5)
   - Cell 6: Markdown for extended AUC table
   - Cell 7: Extended AUC table code
 
 ### Figures (PDF and PNG formats)
-- **`Figure_1_Main`** - **NEW** - Driving days/year vs. AUC (main text figure)
-- **`Figure_1`** - Crash risk vs. warning days (supplementary)
-- **`Figure_S0`** - Binormal forecast model schematic
-- **`Figure_S1`** - Minimum warning days vs. AUC
-- **`Figure_ROC_shapes`** - ROC shape sensitivity analysis
-- **`Figure_ROC_shapes_curves`** - ROC curve geometries comparison
+- **`Figure_1`** - Driving days/year vs. AUC (main text figure)
+- **`Figure_S1`** - Crash risk vs. warning days (supplementary)
+- **`Figure_S2`** - Binormal forecast model schematic (supplementary)
+- **`Figure_S3`** - Minimum warning days vs. AUC (supplementary)
+- **`Figure_S4`** - ROC shape sensitivity analysis (supplementary)
+- **`Figure_S5`** - ROC curve geometries comparison (supplementary)
 
 *PNG versions are displayed in this README; PDF versions are provided for publication.*
 
@@ -129,7 +129,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ### 4.1 Figure 1: Driving Days per Year vs. AUC (Main Text)
 
-![Figure 1 Main](Figure_1_Main.png)
+![Figure 1](Figure_1.png)
 
 **Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline).
 
@@ -145,9 +145,9 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ---
 
-### 4.2 Figure 1 (Supplementary): Crash Risk vs. Days in Warning per Year
+### 4.2 Figure S1: Crash Risk vs. Days in Warning per Year
 
-![Figure 1](Figure_1.png)
+![Figure S1](Figure_S1.png)
 
 **Description:** Crash risk when driving after a negative seizure forecast, as a function of time in warning. Each panel shows crash risk for patients with different baseline seizure frequencies: 1 seizure per week (top), 1 seizure per month (middle), and 1 seizure per year (bottom).
 
@@ -167,9 +167,9 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ---
 
-### 4.3 Figure S0: Binormal Forecast Model Schematic
+### 4.3 Figure S2: Binormal Forecast Model Schematic
 
-![Figure S0](Figure_S0.png)
+![Figure S2](Figure_S2.png)
 
 **Description:** Illustrates the statistical model underlying the primary analysis.
 
@@ -183,9 +183,9 @@ This schematic shows how the forecasting algorithm separates seizure from non-se
 
 ---
 
-### 4.4 Figure S1: Minimum Warning Days Required for Legal-Limit Safety
+### 4.4 Figure S3: Minimum Warning Days Required for Legal-Limit Safety
 
-![Figure S1](Figure_S1.png)
+![Figure S3](Figure_S3.png)
 
 **Description:** Shows the minimum number of warning days per year needed to achieve legal-limit driving safety as a function of AUC, for three seizure frequencies.
 
@@ -199,9 +199,9 @@ This figure demonstrates that achieving safety with high seizure frequencies req
 
 ---
 
-### 4.5 Figure ROC_shapes: Sensitivity to ROC Curve Shape
+### 4.5 Figure S4: Sensitivity to ROC Curve Shape
 
-![Figure ROC_shapes](Figure_ROC_shapes.png)
+![Figure S4](Figure_S4.png)
 
 **Question addressed:** *"Do our conclusions depend on assuming a binormal (symmetric) ROC curve?"*
 
@@ -215,9 +215,9 @@ This figure demonstrates that achieving safety with high seizure frequencies req
 
 ---
 
-### 4.6 Figure ROC_shapes_curves: Comparison of ROC Geometries
+### 4.6 Figure S5: Comparison of ROC Geometries
 
-![Figure ROC_shapes_curves](Figure_ROC_shapes_curves.png)
+![Figure S5](Figure_S5.png)
 
 **Description:** Shows the actual ROC curves for the three different models, all with AUC ≈ 0.90.
 
@@ -333,7 +333,7 @@ The minimum $D_{\text{warning}}$ among these thresholds gives the operating poin
 
 ---
 
-### 5.8 Minimum Warning Days vs AUC (Figure S1)
+### 5.8 Minimum Warning Days vs AUC (Figure S3)
 
 For each AUC value and seizure frequency, we compute:
 
@@ -341,7 +341,7 @@ $$\text{AUC} \rightarrow \min_t D_{\text{warning}}$$
 
 subject to the constraint that $\text{CrashMultiplier} \leq 16$.
 
-This yields the curves shown in Figure S1.
+This yields the curves shown in Figure S3.
 
 ---
 
@@ -518,11 +518,12 @@ The notebook generates:
 - **Detailed statistics** for all AUC values and seizure frequencies
 
 **Figure files:**
-- `Figure_1.pdf/png`
-- `Figure_S0.pdf/png`
-- `Figure_S1.pdf/png`
-- `Figure_ROC_shapes.pdf/png`
-- `Figure_ROC_shapes_curves.pdf/png`
+- `Figure_1.pdf/png` - Main text figure (driving days vs. AUC)
+- `Figure_S1.pdf/png` - Supplementary figure (crash risk vs. warning days)
+- `Figure_S2.pdf/png` - Supplementary figure (binormal model schematic)
+- `Figure_S3.pdf/png` - Supplementary figure (minimum warning days vs. AUC)
+- `Figure_S4.pdf/png` - Supplementary figure (ROC shape sensitivity)
+- `Figure_S5.pdf/png` - Supplementary figure (ROC curve geometries)
 
 ---
 

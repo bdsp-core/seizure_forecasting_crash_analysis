@@ -508,16 +508,6 @@ The notebook generates:
 
 See [LICENSE](LICENSE) file for details.
 
-### Contact
-
-For questions or issues, please:
-- Open a [GitHub issue](https://github.com/bdsp-core/seizure_forecasting_crash_analysis/issues)
-- Contact the authors
-
-### Repository
-
-**GitHub:** https://github.com/bdsp-core/seizure_forecasting_crash_analysis
-
 ---
 
 *Last updated: November 2024*

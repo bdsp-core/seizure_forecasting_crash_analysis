@@ -16,10 +16,11 @@ This repository contains the complete analysis code, mathematical methods, and s
 ### 4. [Figures](#4-figures)
    - 4.1 [Figure 1: Driving Days vs. AUC (Main)](#41-figure-1-driving-days-per-year-vs-auc-main-text)
    - 4.2 [Figure S1: Crash Risk vs. Days in Warning](#42-figure-s1-crash-risk-vs-days-in-warning-per-year)
-   - 4.3 [Figure S2: Binormal Forecast Model](#43-figure-s2-binormal-forecast-model-schematic)
+   - 4.3 [Figure S2: Driving Days vs. AUC (Two Durations)](#43-figure-s2-driving-days-per-year-vs-auc-supplementary-two-driving-durations)
    - 4.4 [Figure S3: Minimum Warning Days vs. AUC](#44-figure-s3-minimum-warning-days-required-for-legal-limit-safety)
-   - 4.5 [Figure S4: ROC Shape Sensitivity](#45-figure-s4-sensitivity-to-roc-curve-shape)
-   - 4.6 [Figure S5: ROC Curve Comparison](#46-figure-s5-comparison-of-roc-geometries)
+   - 4.5 [Figure S4: Binormal Forecast Model](#45-figure-s4-binormal-forecast-model-schematic)
+   - 4.6 [Figure S5: ROC Shape Sensitivity](#46-figure-s5-sensitivity-to-roc-curve-shape)
+   - 4.7 [Figure S6: ROC Curve Comparison](#47-figure-s6-comparison-of-roc-geometries)
 ### 5. [Mathematical Methods](#5-mathematical-methods)
    - 5.1 [Binormal ROC Model](#51-binormal-roc-model)
    - 5.2 [Sensitivity and False Positive Rate](#52-sensitivity-and-false-positive-rate)
@@ -42,9 +43,11 @@ This repository contains the complete analysis code, mathematical methods, and s
 
 ## 1. Overview
 
-This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC) and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk).
+This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk).
 
-**Key finding:** Even high-performance forecasting algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. Only patients with rare seizures (≤1 per year) can achieve near-daily driving with excellent forecasting performance.
+**Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal crash risk.
+
+**Key findings:** Patients with infrequent seizures (≤1 per year) are already below the legal-limit crash risk threshold even without forecasting, particularly with limited daily driving. For patients with frequent seizures, forecasting can enable meaningful driving privileges, though substantial restrictions remain necessary even with high-performance algorithms (AUC ≥ 0.90).
 
 ---
 
@@ -52,22 +55,23 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 ### Code
 - **[`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb)** - Complete Jupyter notebook with all analysis code
-  - Cell 0: Figure S1 (crash risk vs. warning days)
-  - Cell 1: Empty
-  - Cell 2: Figure 1 (driving days vs. AUC) for main text
-  - Cell 3: Figure S3 (minimum warning days vs. AUC)
-  - Cell 4: Figure S2 (binormal model schematic)
-  - Cell 5: ROC shape sensitivity analysis (Figures S4 and S5)
-  - Cell 6: Markdown for extended AUC table
-  - Cell 7: Extended AUC table code
+  - Cell 0: Figure S1 (crash risk vs. warning days, 3×2 grid by seizure frequency and driving duration)
+  - Cell 1: Figure 1 (driving days vs. AUC) for main text - single-panel plot with 1 hour/day driving
+  - Cell 2: Figure S2 (driving days vs. AUC, supplementary) - 2-panel plot for 30 min and 2 hr driving
+  - Cell 3: Figure S3 (minimum warning days vs. AUC) - 2-panel plot
+  - Cell 4: Figure S4 (binormal model schematic)
+  - Cell 5: ROC shape sensitivity analysis (Figures S5 and S6) - uses 1 hour/day driving
+  - Cell 6: Markdown cell for extended AUC table introduction
+  - Cell 7: Extended AUC table code - comprehensive table with AUC values 0.60-0.99
 
 ### Figures (PDF and PNG formats)
-- **`Figure_1`** - Driving days/year vs. AUC (main text figure)
-- **`Figure_S1`** - Crash risk vs. warning days (supplementary)
-- **`Figure_S2`** - Binormal forecast model schematic (supplementary)
-- **`Figure_S3`** - Minimum warning days vs. AUC (supplementary)
-- **`Figure_S4`** - ROC shape sensitivity analysis (supplementary)
-- **`Figure_S5`** - ROC curve geometries comparison (supplementary)
+- **`Figure_1`** - Driving days/year vs. AUC (main text figure, 1 hour/day)
+- **`Figure_S1`** - Crash risk vs. warning days (supplementary, 3×2 grid)
+- **`Figure_S2`** - Driving days/year vs. AUC (supplementary, 2-panel: 30 min and 2 hr/day)
+- **`Figure_S3`** - Minimum warning days vs. AUC (supplementary, 2-panel)
+- **`Figure_S4`** - Binormal forecast model schematic (supplementary)
+- **`Figure_S5`** - ROC shape sensitivity analysis (supplementary)
+- **`Figure_S6`** - ROC curve geometries comparison (supplementary)
 
 *PNG versions are displayed in this README; PDF versions are provided for publication.*
 
@@ -77,38 +81,48 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 ### 3.1 Main Findings Table
 
-**Driving Restrictions Required to Achieve Legal-Limit Crash Risk by Seizure Frequency and Forecasting Performance**
+**Driving Restrictions Required to Achieve Legal-Limit Crash Risk by Seizure Frequency, Driving Duration, and Forecasting Performance**
 
-At the legal-limit safety threshold (16× baseline crash risk):
+At the legal-limit safety threshold (16× baseline crash risk, equivalent to BAC ≈ 0.08%):
+
+#### 30 Minutes Driving per Day
 
 | Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
 |------------------|-----|-------------------|-------------------|------------------------|
-| **1/week** | 0.60 | — | — | Cannot reach safety threshold |
-| | 0.70 | 365 | 0 | ∞ |
-| | 0.80 | 365 | 0 | 59,333 |
-| | 0.90 | 358 | 7 | 55 |
-| | 0.95 | 314 | 51 | 7.2 |
-| | 0.99 | 159 | 206 | 1.8 |
-| **1/month** | 0.60 | — | — | Cannot reach safety threshold |
-| | 0.70 | 365 | 0 | 17,394,297 |
-| | 0.80 | 364 | 1 | 396 |
-| | 0.90 | 318 | 47 | 7.8 |
-| | 0.95 | 221 | 144 | 2.5 |
-| | 0.99 | 69 | 296 | 1.2 |
-| **1/year** | 0.60 | 365 | 0 | 680,859 |
-| | 0.70 | 349 | 16 | 23.1 |
-| | 0.80 | 238 | 127 | 2.9 |
-| | 0.90 | 97 | 268 | 1.4 |
-| | 0.95 | 38 | 327 | 1.1 |
-| | 0.99 | 5 | 360 | 1.0 |
+| **1/week** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 269 | 96 | 3.8 |
+| | 0.90 | 138 | 227 | 1.6 |
+| **1/month** | 0.60 | 242 | 123 | 3.0 |
+| | 0.80 | 31 | 334 | 1.1 |
+| | 0.90 | 10 | 355 | 1.0 |
+| **1/year** | 0.60 | 0 | 365 | 1.0 (already safe) |
+| | 0.80 | 0 | 365 | 1.0 (already safe) |
+| | 0.90 | 0 | 365 | 1.0 (already safe) |
+
+#### 2 Hours Driving per Day
+
+| Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
+|------------------|-----|-------------------|-------------------|------------------------|
+| **1/week** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 356 | 9 | 39.2 |
+| | 0.90 | 264 | 102 | 3.6 |
+| **1/month** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 247 | 118 | 3.1 |
+| | 0.90 | 106 | 259 | 1.4 |
+| **1/year** | 0.60 | 0 | 365 | 1.0 (already safe) |
+| | 0.80 | 0 | 365 | 1.0 (already safe) |
+| | 0.90 | 0 | 365 | 1.0 (already safe) |
 
 **Key Insights:**
-- **AUC < 0.70** is insufficient for practical driving policies at any seizure frequency
-- **AUC = 0.90** enables ~7 days/year for weekly seizures, ~47 days/year for monthly seizures, ~268 days/year for yearly seizures
-- **Even AUC = 0.99** (near-perfect) limits weekly seizure patients to ~56% of days
-- **Seizure frequency is the dominant factor** determining driving feasibility
+
+- **Driving duration matters substantially:** For weekly seizures with AUC = 0.90, a 30-min/day driver gets 227 driving days/year vs. only 102 days for a 2-hr/day driver
+- **Patients with rare seizures (≤1/year) are already safe** under this model regardless of AUC, because the joint probability of (seizure today) × (seizure occurs while driving) × (crash given seizure) is extremely low
+- **Monthly seizure patients benefit greatly from forecasting:** With 30 min/day driving and AUC = 0.80, they can drive 334 days/year (vs. essentially none under naive models)
+- **Weekly seizure patients still face significant restrictions** but can achieve meaningful driving with high-AUC forecasting
 
 ### 3.2 ROC Shape Sensitivity Analysis
+
+**Note:** This sensitivity analysis uses 1 hour of driving per day (intermediate between the 30 min and 2 hour scenarios in the main analysis).
 
 Comparison of driving days allowed per year across different ROC shapes (all AUC ≈ 0.90):
 
@@ -131,7 +145,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ![Figure 1](Figure_1.png)
 
-**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline).
+**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline), assuming 1 hour of driving per day.
 
 **Key features:**
 - **Three colored curves:** Show relationship between AUC and safe driving days for different seizure frequencies
@@ -140,8 +154,9 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
   - Orange: 1 seizure/week
 - **Filled circles:** Mark key AUC values (0.60, 0.70, 0.80, 0.90, 0.95, 0.99)
 - **Smooth curves:** Calculated analytically using equal-variance binormal ROC model with Bayes' theorem
+- **Inline labels:** Tufte-style data-integrated labels placed directly on curves
 
-**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. For weekly seizures, only ~7 days/year are permitted; for yearly seizures, ~268 days/year.
+**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. With 1 hour/day driving at AUC 0.90: weekly seizures permit ~160 days/year, monthly seizures permit ~310 days/year, and yearly seizures permit 365 days/year (already safe).
 
 ---
 
@@ -149,7 +164,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ![Figure S1](Figure_S1.png)
 
-**Description:** Crash risk when driving after a negative seizure forecast, as a function of time in warning. Each panel shows crash risk for patients with different baseline seizure frequencies: 1 seizure per week (top), 1 seizure per month (middle), and 1 seizure per year (bottom).
+**Description:** Crash risk when driving after a negative seizure forecast, as a function of time in warning. The figure displays a 3×2 grid: rows correspond to seizure frequencies (1/week, 1/month, 1/year) and columns correspond to daily driving duration (30 min/day, 2 hr/day).
 
 **Key features:**
 - **Black curves:** Algorithms with AUROC = 0.60, 0.80, and 0.90 (thicker lines = higher AUC)
@@ -161,15 +176,51 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 - **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
 - **Light pink region:** "Unsafe" zone (above legal limit)
 
-**Calculations:** Crash risk calculated assuming 50% probability of crash given a seizure while driving and baseline crash risk of 1.5 × 10⁻⁵ per trip. Alcohol-related relative risks derived from Zador et al. (2000), with risk approximately doubling per 0.02% increase in BAC.
+**Updated crash model:** We compute crash risk accounting for the probability that a seizure occurs *during* driving:
 
-**Trade-off:** Higher crash risk reduction requires more days in warning (fewer driving days).
+$$P(\text{crash} | \text{seizure day}) = P(\text{driving at seizure time}) \times P(\text{crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \times p_0$$
+
+Where:
+- $P(\text{driving at seizure time}) = \frac{\text{driving hours}}{24}$ (assuming seizure timing is uniformly distributed)
+- $P(\text{crash} | \text{seizure while driving}) = 0.5$
+- $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
+
+**Key observations:**
+- **Patients with yearly seizures** are already below the legal-limit threshold even without forecasting, regardless of driving duration
+- **Driving duration has a major impact:** Compare left column (30 min/day) to right column (2 hr/day)—the curves shift substantially, reflecting the 4× difference in seizure-during-driving probability
+- **Monthly seizure patients** can achieve safe driving with modest forecasting performance (AUC ≥ 0.60 for light drivers)
 
 ---
 
-### 4.3 Figure S2: Binormal Forecast Model Schematic
+### 4.3 Figure S2: Driving Days per Year vs. AUC (Supplementary, Two Driving Durations)
 
 ![Figure S2](Figure_S2.png)
+
+**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
+
+**Key features:**
+- **Three colored curves** (per panel): Show relationship between AUC and safe driving days for different seizure frequencies
+  - Green: 1 seizure/year
+  - Blue: 1 seizure/month
+  - Orange: 1 seizure/week
+- **Filled circles:** Mark key AUC values (0.60, 0.70, 0.80, 0.90, 0.95, 0.99)
+- **Inline labels:** Tufte-style data-integrated labels placed directly on curves
+
+**Key finding:** Driving exposure matters substantially. For weekly seizures with AUC = 0.90, a 30-min/day driver gets 227 driving days/year vs. only 102 days for a 2-hr/day driver—demonstrating the critical impact of the probability that a seizure occurs during driving hours.
+
+---
+
+### 4.4 Figure S3: Minimum Warning Days Required for Legal-Limit Safety
+
+![Figure S3](Figure_S3.png)
+
+**Description:** Two-panel figure showing how minimum warning days required to achieve legal-limit safety varies with AUC for each seizure frequency. Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day. The secondary y-axis shows the corresponding maximum driving days allowed per year (365 minus warning days).
+
+---
+
+### 4.5 Figure S4: Binormal Forecast Model Schematic
+
+![Figure S4](Figure_S4.png)
 
 **Description:** Illustrates the statistical model underlying the primary analysis.
 
@@ -183,50 +234,19 @@ This schematic shows how the forecasting algorithm separates seizure from non-se
 
 ---
 
-### 4.4 Figure S3: Minimum Warning Days Required for Legal-Limit Safety
-
-![Figure S3](Figure_S3.png)
-
-**Description:** Shows the minimum number of warning days per year needed to achieve legal-limit driving safety as a function of AUC, for three seizure frequencies.
-
-**Key elements:**
-- **Solid line:** 1 seizure/week
-- **Dashed line:** 1 seizure/month
-- **Dotted line:** 1 seizure/year
-- **Right y-axis:** Converts warning days to maximum allowed driving days (365 − warning days)
-
-This figure demonstrates that achieving safety with high seizure frequencies requires extremely high AUC values (>0.90).
-
----
-
-### 4.5 Figure S4: Sensitivity to ROC Curve Shape
-
-![Figure S4](Figure_S4.png)
-
-**Question addressed:** *"Do our conclusions depend on assuming a binormal (symmetric) ROC curve?"*
-
-**Comparison:** Three different ROC curve shapes, all calibrated to AUC ≈ 0.90:
-
-1. **Equal-variance binormal** (black): Standard symmetric ROC curve
-2. **Unequal-variance binormal** (blue): S-shaped ROC from different class variances
-3. **Mixture model** (red): "Hooked" ROC from heterogeneous positive class
-
-**Key finding:** While ROC shape affects the *specific number* of allowable driving days, it does not change the qualitative conclusion that high seizure frequencies require severe driving restrictions even with excellent forecasting (AUC = 0.90).
-
----
-
-### 4.6 Figure S5: Comparison of ROC Geometries
+### 4.6 Figure S5: Sensitivity to ROC Curve Shape
 
 ![Figure S5](Figure_S5.png)
 
-**Description:** Shows the actual ROC curves for the three different models, all with AUC ≈ 0.90.
+**Description:** Compares crash risk vs. warning days for different ROC curve shapes (equal-variance binormal, S-shaped/unequal variance, hooked/mixture model) at fixed AUC ≈ 0.90. This analysis uses 1 hour of driving per day (same as the main text figure). The figure shows three panels (one per seizure frequency) with colored curves for each ROC shape.
 
-**Shape characteristics:**
-- **Equal-variance:** Smooth, symmetric curve
-- **S-shaped:** Convex near (0,0), concave near (1,1)
-- **Hooked:** Rises quickly at low FPR, then flattens
+---
 
-Despite similar overall discriminative ability (AUC), the curves have visibly different shapes, leading to different optimal operating points, particularly for low-frequency seizures.
+### 4.7 Figure S6: Comparison of ROC Geometries
+
+![Figure S6](Figure_S6.png)
+
+**Description:** Visualizes the three ROC curve shapes tested in the sensitivity analysis.
 
 ---
 
@@ -234,17 +254,12 @@ Despite similar overall discriminative ability (AUC), the curves have visibly di
 
 ### 5.1 Binormal ROC Model
 
-We model the forecast score $S$ as:
+We model the forecasting algorithm output as normally distributed scores. For a threshold $t$:
 
-$$S | \text{no seizure} \sim N(0,1)$$
+- Non-seizure days: $S \sim N(0, 1)$
+- Seizure days: $S \sim N(m, 1)$
 
-$$S | \text{seizure} \sim N(m,1)$$
-
-The separation parameter $m$ determines discrimination. The AUC is:
-
-$$\text{AUC} = \Phi\left(\frac{m}{\sqrt{2}}\right)$$
-
-Therefore:
+The separation parameter $m$ is related to AUC by:
 
 $$m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$$
 
@@ -252,125 +267,120 @@ $$m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$$
 
 ### 5.2 Sensitivity and False Positive Rate
 
-A day is labeled "warning" if $S \geq t$ and "safe" if $S < t$:
+For threshold $t$:
 
-$$\text{Sensitivity} = 1 - \Phi(t - m)$$
+$$\text{Sensitivity} = P(S > t | \text{seizure}) = 1 - \Phi(t - m) = \Phi(m - t)$$
 
-$$\text{FPR} = 1 - \Phi(t)$$
+$$\text{FPR} = P(S > t | \text{no seizure}) = 1 - \Phi(t)$$
 
 ---
 
 ### 5.3 Daily Seizure Probability
 
-Using a Poisson rate $r$ seizures/day, the daily seizure probability is:
+For a patient with average seizure rate $R$ (seizures per day), the daily seizure probability under a Poisson process is:
 
-$$p = 1 - e^{-r}$$
+$$p = 1 - e^{-R}$$
 
-**Examples:**
-- 1 seizure/week: $r = 1/7$, $p \approx 0.134$
-- 1 seizure/month: $r = 1/30$, $p \approx 0.033$
-- 1 seizure/year: $r = 1/365$, $p \approx 0.0027$
-
-**Note on Poisson Approximation:**
-We use a Poisson approximation to convert seizure frequency into daily seizure probability for computational simplicity. Since our analysis depends only on the average daily probability and not on temporal clustering patterns, alternative stochastic models for seizure occurrence would yield equivalent results for individuals with the same average seizure frequency. Whether seizures are truly Poisson-distributed, clustered, or overdispersed does not affect the crash risk calculations, which depend only on the forecasting algorithm's performance (AUC) and the baseline rate.
+For example:
+- 1 seizure/week: $R = 1/7$, $p \approx 0.133$
+- 1 seizure/month: $R = 1/30$, $p \approx 0.033$
+- 1 seizure/year: $R = 1/365$, $p \approx 0.0027$
 
 ---
 
-### 5.4 Posterior Probability of Seizure on Safe Days
+### 5.4 Posterior Probability of Seizure on "Safe" Days
 
-By Bayes' rule, the probability of a seizure on a day labeled "safe" is:
+Using Bayes' theorem, the probability of a seizure given a negative forecast ("safe" day):
 
-$$P(\text{seizure} | \text{safe}) = \frac{\Phi(t-m) \cdot p}{\Phi(t-m) \cdot p + \Phi(t)(1-p)}$$
+$$P(\text{seizure} | \text{safe}) = \frac{P(\text{safe} | \text{seizure}) \cdot p}{P(\text{safe} | \text{seizure}) \cdot p + P(\text{safe} | \text{no seizure}) \cdot (1-p)}$$
 
-This combines:
-- The false negative rate: $\Phi(t-m)$
-- The true negative rate: $\Phi(t)$
-- The baseline daily seizure probability: $p$
+$$= \frac{(1 - \text{Sensitivity}) \cdot p}{(1 - \text{Sensitivity}) \cdot p + (1 - \text{FPR}) \cdot (1-p)}$$
+
+$$= \frac{\Phi(t - m) \cdot p}{\Phi(t - m) \cdot p + \Phi(t) \cdot (1-p)}$$
 
 ---
 
-### 5.5 Crash Risk on Safe Days
+### 5.5 Crash Risk on "Safe" Days
 
-Let $p_0$ be baseline crash risk and $p_{sz}$ be the crash probability given a seizure while driving:
+**Updated model accounting for driving exposure:**
 
-$$\text{CrashRisk} = P(\text{seizure} | \text{safe}) \cdot p_{sz} + [1 - P(\text{seizure} | \text{safe})] \cdot p_0$$
+The probability of a crash on a "safe" day depends on whether a seizure occurs and, if so, whether the person is driving at that moment:
 
-The crash risk multiplier (relative to baseline) is:
+$$P(\text{crash} | \text{safe day}) = P(\text{seizure} | \text{safe}) \cdot P(\text{crash} | \text{seizure day}) + P(\text{no seizure} | \text{safe}) \cdot p_0$$
 
-$$\text{CrashMultiplier} = \frac{\text{CrashRisk}}{p_0}$$
+Where the crash probability given a seizure day accounts for driving exposure:
 
-**Parameters:**
+$$P(\text{crash} | \text{seizure day}) = P(\text{driving at seizure time}) \cdot P(\text{crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \cdot p_0$$
+
+**Key parameters:**
+- $P(\text{driving at seizure time}) = \frac{D}{24}$, where $D$ is hours of driving per day
+- $P(\text{crash} | \text{seizure while driving}) = 0.5$ (assumed)
 - $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
-- $p_{sz} = 0.5$ (crash probability given seizure while driving)
+
+**For 30 minutes driving/day:**
+$$P(\text{driving at seizure time}) = \frac{0.5}{24} \approx 0.021$$
+
+**For 2 hours driving/day:**
+$$P(\text{driving at seizure time}) = \frac{2}{24} \approx 0.083$$
+
+This formulation recognizes that even if a seizure occurs on a given day, it only poses a driving risk if it happens to occur during the limited time window when the person is actually driving.
+
+**Relative crash risk:**
+
+$$\text{Relative risk} = \frac{P(\text{crash} | \text{safe day})}{p_0}$$
 
 ---
 
 ### 5.6 Time in Warning
 
-The probability that a randomly selected day is labeled "warning" is:
+The proportion of days spent in warning (forecast positive):
 
-$$P(\text{warning}) = p \cdot \text{Sensitivity} + (1-p) \cdot \text{FPR}$$
+$$P(\text{warning}) = \text{Sensitivity} \cdot p + \text{FPR} \cdot (1-p)$$
 
-Expected warning days per year:
-
-$$D_{\text{warning}} = 365 \times P(\text{warning})$$
-
-Expected driving days per year:
-
-$$D_{\text{drive}} = 365 - D_{\text{warning}}$$
+$$\text{Days in warning per year} = P(\text{warning}) \times 365$$
 
 ---
 
 ### 5.7 Minimum Warning Days for Legal-Limit Safety
 
-We identify thresholds $t$ where:
+The legal limit for driving (BAC ≈ 0.08%) corresponds to approximately 16× baseline crash risk. We find the operating threshold $t$ such that:
 
-$$\text{CrashMultiplier} \leq 16$$
+$$\frac{P(\text{crash} | \text{safe day})}{p_0} \leq 16$$
 
-(where 16× corresponds to the crash risk at the legal BAC limit of 0.08%)
-
-The minimum $D_{\text{warning}}$ among these thresholds gives the operating point shown as black points in Figure 1.
+The corresponding days in warning gives the minimum restriction required for legal-limit safety.
 
 ---
 
-### 5.8 Minimum Warning Days vs AUC (Figure S3)
+### 5.8 Minimum Warning Days vs. AUC (Figure S3)
 
-For each AUC value and seizure frequency, we compute:
+For each AUC, we compute the minimum warning days required to achieve the legal-limit safety threshold by:
 
-$$\text{AUC} \rightarrow \min_t D_{\text{warning}}$$
-
-subject to the constraint that $\text{CrashMultiplier} \leq 16$.
-
-This yields the curves shown in Figure S3.
+1. Computing $m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$
+2. Sweeping threshold $t$ to find operating points
+3. Identifying the threshold where crash risk equals 16× baseline
+4. Computing the corresponding days in warning
 
 ---
 
 ### 5.9 Reproducibility
 
-All computations use:
-- Closed-form normal distribution formulas
-- Deterministic threshold grids: $t \in [-10, 10]$ with 1000 points
-- No randomization or simulation
-
-The complete Python code is provided in [`crashes_vs_TiW.ipynb`](crashes_vs_TiW.ipynb) and will reproduce all figures exactly.
+All calculations use:
+- NumPy for numerical operations
+- SciPy's `norm` for Gaussian CDF/inverse CDF
+- Matplotlib for visualization
+- Analytical (closed-form) expressions—no Monte Carlo simulation required
 
 ---
 
 ### 5.10 Why ROC Shape Matters (and Why It Doesn't)
 
-The binormal ROC model assumes equal variance in the score distributions for seizure and non-seizure days. While this is a simplification, it is:
+The binormal ROC assumption implies a specific relationship between sensitivity and specificity. Real-world ROC curves can deviate due to:
 
-1. **Standard**: Most widely used parametric ROC representation in biomedical research
-2. **Tractable**: Allows closed-form computation of all operating characteristics
-3. **Optimistic**: Typically provides near-best-case sensitivity-specificity trade-offs for a given AUC
-4. **Appropriate**: Ideal for conceptual analysis asking "what can *any* algorithm with AUC = X achieve?"
+- **Unequal variances**: S-shaped ROC curves
+- **Mixture distributions**: Hooked ROC curves (some seizures easier to predict than others)
+- **Finite samples**: Stepwise empirical ROC curves
 
-However, real-world ROC curves can deviate due to:
-- Unequal variances between classes (S-shaped ROCs)
-- Mixture distributions (hooked ROCs)
-- Finite-sample effects (stepwise ROCs)
-
-**Our sensitivity analysis tests robustness to these deviations.**
+Our sensitivity analysis (Section 3.2) tests whether these deviations affect conclusions.
 
 ---
 
@@ -476,6 +486,16 @@ Empirical ROC curves can indeed deviate from binormal shape due to:
 - At **low seizure frequency** (yearly), all ROC shapes with AUC = 0.90 permit substantial driving, though exact days vary by shape
 - The fundamental barrier is **limited discriminative ability (AUC)**, not detailed ROC geometry
 
+### Validity of the driving exposure model
+
+The updated model assumes:
+
+1. **Seizure timing is uniformly distributed** throughout the day. This is a simplification—many patients have circadian seizure patterns (e.g., nocturnal epilepsy, morning clustering). For patients with seizures concentrated outside typical driving hours, the model may be conservative; for those with daytime clustering, it may be optimistic.
+
+2. **Driving duration is constant across days**. In reality, driving varies day-to-day. The 30 min/day and 2 hr/day scenarios bracket typical commuter and heavy driver patterns.
+
+3. **P(crash | seizure while driving) = 50%**. This is a conservative assumption based on limited empirical data. The actual probability depends on seizure type, warning symptoms (aura), road conditions, and vehicle safety features.
+
 ### Recommendations for algorithm developers
 
 If you are developing a seizure forecasting algorithm:
@@ -483,7 +503,8 @@ If you are developing a seizure forecasting algorithm:
 1. **Aim for AUC ≥ 0.90** as a minimum for driving applications
 2. **Characterize your empirical ROC shape**—if it's S-shaped or hooked, this may affect optimal operating points
 3. **For patients with frequent seizures**, even AUC = 0.90 may be insufficient for safe, practical driving policies
-4. **For patients with rare seizures**, AUC ≥ 0.90 can support meaningful driving opportunities, and ROC shape becomes more important for optimization
+4. **For patients with rare seizures**, forecasting may be unnecessary for safety—focus on other quality-of-life benefits
+5. **Consider patient-specific driving patterns** when counseling about risk
 
 ---
 
@@ -512,18 +533,19 @@ jupyter nbconvert --to notebook --execute crashes_vs_TiW.ipynb
 ### Outputs
 
 The notebook generates:
-- **Five PDF figures** (high-resolution for publication)
-- **Five PNG figures** (for display on GitHub)
+- **Six PDF figures** (high-resolution for publication)
+- **Six PNG figures** (for display on GitHub)
 - **Comprehensive table** (tab-delimited, ready for Word)
-- **Detailed statistics** for all AUC values and seizure frequencies
+- **Detailed statistics** for all AUC values, seizure frequencies, and driving durations
 
 **Figure files:**
-- `Figure_1.pdf/png` - Main text figure (driving days vs. AUC)
-- `Figure_S1.pdf/png` - Supplementary figure (crash risk vs. warning days)
-- `Figure_S2.pdf/png` - Supplementary figure (binormal model schematic)
-- `Figure_S3.pdf/png` - Supplementary figure (minimum warning days vs. AUC)
-- `Figure_S4.pdf/png` - Supplementary figure (ROC shape sensitivity)
-- `Figure_S5.pdf/png` - Supplementary figure (ROC curve geometries)
+- `Figure_1.pdf/png` - Main text figure (driving days vs. AUC, 1 hour/day)
+- `Figure_S1.pdf/png` - Supplementary figure (crash risk vs. warning days, 3×2 grid)
+- `Figure_S2.pdf/png` - Supplementary figure (driving days vs. AUC, 2-panel: 30 min and 2 hr/day)
+- `Figure_S3.pdf/png` - Supplementary figure (minimum warning days vs. AUC, 2-panel)
+- `Figure_S4.pdf/png` - Supplementary figure (binormal model schematic)
+- `Figure_S5.pdf/png` - Supplementary figure (ROC shape sensitivity)
+- `Figure_S6.pdf/png` - Supplementary figure (ROC curve geometries)
 
 ---
 
@@ -539,4 +561,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-*Last updated: November 2024*
+*Last updated: December 7, 2024*

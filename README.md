@@ -45,7 +45,7 @@ This repository contains the complete analysis code, mathematical methods, and s
 
 This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk).
 
-**Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal crash risk.
+**Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 1 hour per day, 1/24 ≈ 4.2%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal crash risk. We use 1 hour/day as the primary scenario in our main text figure, as this represents a typical driving duration for American drivers.[1,2]
 
 **Key findings:** Patients with infrequent seizures (≤1 per year) are already below the legal-limit crash risk threshold even without forecasting, particularly with limited daily driving. For patients with frequent seizures, forecasting can enable meaningful driving privileges, though substantial restrictions remain necessary even with high-performance algorithms (AUC ≥ 0.90).
 
@@ -554,6 +554,12 @@ The notebook generates:
 ### Citation
 
 [Citation information will be added upon publication]
+
+### References
+
+1. AAA Foundation for Traffic Safety. (2024). *American Driving Survey, 2023*. Retrieved from https://aaafoundation.org/wp-content/uploads/2024/08/202408-AAAFTS-American-Driving-Survey-2023.pdf
+
+2. U.S. Census Bureau. (2024). *Commuting Characteristics by Sex: 2023* (ACSBR-018). Retrieved from https://www2.census.gov/library/publications/2024/demo/acsbr-018.pdf
 
 ### License
 

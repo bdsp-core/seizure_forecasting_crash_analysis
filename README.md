@@ -28,7 +28,7 @@ This repository contains the complete analysis code, mathematical methods, and s
    - 5.4 [Posterior Probability (Bayes' Rule)](#54-posterior-probability-of-seizure-on-safe-days)
    - 5.5 [Crash Risk Calculation](#55-crash-risk-on-safe-days)
    - 5.6 [Time in Warning](#56-time-in-warning)
-   - 5.7 [Legal-Limit Safety Threshold](#57-minimum-warning-days-for-legal-limit-safety)
+   - 5.7 [Safety Threshold Threshold](#57-minimum-warning-days-for-legal-limit-safety)
    - 5.8 [AUC Performance Curves](#58-minimum-warning-days-vs-auc-figure-s1)
    - 5.9 [Reproducibility](#59-reproducibility)
    - 5.10 [ROC Shape Analysis](#510-why-roc-shape-matters-and-why-it-doesnt)
@@ -43,11 +43,11 @@ This repository contains the complete analysis code, mathematical methods, and s
 
 ## 1. Overview
 
-This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain crash risk at or below legal intoxication levels (approximately 16× baseline risk).
+This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain crash risk at or below a safety threshold of 3 drinks (approximately 6× baseline risk)—more conservative than the legal intoxication limit of 4 drinks (16× baseline risk). This choice reflects the principle that AI-assisted medical decisions should meet substantially higher safety standards than merely matching known dangerous activities.
 
 **Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 1 hour per day, 1/24 ≈ 4.2%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal crash risk. We use 1 hour/day as the primary scenario in our main text figure, as this represents a typical driving duration for American drivers.[1,2]
 
-**Key findings:** Patients with infrequent seizures (≤1 per year) are already below the legal-limit crash risk threshold even without forecasting, particularly with limited daily driving. For patients with frequent seizures, forecasting can enable meaningful driving privileges, though substantial restrictions remain necessary even with high-performance algorithms (AUC ≥ 0.90).
+**Key findings:** With the 3-drink (6×) safety threshold, patients with infrequent seizures (≤1 per year) remain safe even without forecasting. For patients with frequent seizures, high-performance forecasting algorithms (AUC ≥ 0.90) can enable meaningful driving privileges: with 1 hour/day driving, weekly seizures permit ~68 days/year, monthly seizures permit ~212 days/year, and yearly seizures permit 365 days/year.
 
 ---
 
@@ -81,20 +81,34 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 ### 3.1 Main Findings Table
 
-**Driving Restrictions Required to Achieve Legal-Limit Crash Risk by Seizure Frequency, Driving Duration, and Forecasting Performance**
+**Driving Restrictions Required to Achieve Safety Threshold by Seizure Frequency, Driving Duration, and Forecasting Performance**
 
-At the legal-limit safety threshold (16× baseline crash risk, equivalent to BAC ≈ 0.08%):
+At the safety threshold (6× baseline crash risk, equivalent to 3 drinks—more conservative than legal intoxication limit):
 
 #### 30 Minutes Driving per Day
 
 | Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
 |------------------|-----|-------------------|-------------------|------------------------|
 | **1/week** | 0.60 | 365 | 0 | Cannot reach safety threshold |
-| | 0.80 | 269 | 96 | 3.8 |
-| | 0.90 | 138 | 227 | 1.6 |
-| **1/month** | 0.60 | 242 | 123 | 3.0 |
-| | 0.80 | 31 | 334 | 1.1 |
-| | 0.90 | 10 | 355 | 1.0 |
+| | 0.80 | 351 | 14 | 25.3 |
+| | 0.90 | 247 | 118 | 3.1 |
+| **1/month** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 214 | 151 | 2.4 |
+| | 0.90 | 86 | 279 | 1.3 |
+| **1/year** | 0.60 | 0 | 365 | 1.0 (already safe) |
+| | 0.80 | 0 | 365 | 1.0 (already safe) |
+| | 0.90 | 0 | 365 | 1.0 (already safe) |
+
+#### 1 Hour Driving per Day
+
+| Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
+|------------------|-----|-------------------|-------------------|------------------------|
+| **1/week** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 362 | 3 | 118.3 |
+| | 0.90 | 297 | 68 | 5.4 |
+| **1/month** | 0.60 | 365 | 0 | Cannot reach safety threshold |
+| | 0.80 | 301 | 64 | 5.7 |
+| | 0.90 | 153 | 212 | 1.7 |
 | **1/year** | 0.60 | 0 | 365 | 1.0 (already safe) |
 | | 0.80 | 0 | 365 | 1.0 (already safe) |
 | | 0.90 | 0 | 365 | 1.0 (already safe) |
@@ -104,21 +118,22 @@ At the legal-limit safety threshold (16× baseline crash risk, equivalent to BAC
 | Seizure Frequency | AUC | Warning Days/Year | Driving Days/Year | Avg Days Between Drives |
 |------------------|-----|-------------------|-------------------|------------------------|
 | **1/week** | 0.60 | 365 | 0 | Cannot reach safety threshold |
-| | 0.80 | 356 | 9 | 39.2 |
-| | 0.90 | 264 | 102 | 3.6 |
+| | 0.80 | 365 | 0 | Cannot reach safety threshold |
+| | 0.90 | 330 | 35 | 10.5 |
 | **1/month** | 0.60 | 365 | 0 | Cannot reach safety threshold |
-| | 0.80 | 247 | 118 | 3.1 |
-| | 0.90 | 106 | 259 | 1.4 |
+| | 0.80 | 345 | 21 | 17.9 |
+| | 0.90 | 223 | 142 | 2.6 |
 | **1/year** | 0.60 | 0 | 365 | 1.0 (already safe) |
-| | 0.80 | 0 | 365 | 1.0 (already safe) |
-| | 0.90 | 0 | 365 | 1.0 (already safe) |
+| | 0.80 | 35 | 330 | 1.1 |
+| | 0.90 | 8 | 357 | 1.0 |
 
 **Key Insights:**
 
-- **Driving duration matters substantially:** For weekly seizures with AUC = 0.90, a 30-min/day driver gets 227 driving days/year vs. only 102 days for a 2-hr/day driver
+- **More conservative threshold requires higher performance:** With the 6× safety threshold (3 drinks), algorithms need AUC ≥ 0.90 to provide meaningful driving days for patients with frequent seizures
+- **Driving duration matters substantially:** For weekly seizures with AUC = 0.90, a 30-min/day driver gets 118 driving days/year vs. only 35 days for a 2-hr/day driver
 - **Patients with rare seizures (≤1/year) are already safe** under this model regardless of AUC, because the joint probability of (seizure today) × (seizure occurs while driving) × (crash given seizure) is extremely low
-- **Monthly seizure patients benefit greatly from forecasting:** With 30 min/day driving and AUC = 0.80, they can drive 334 days/year (vs. essentially none under naive models)
-- **Weekly seizure patients still face significant restrictions** but can achieve meaningful driving with high-AUC forecasting
+- **Monthly seizure patients benefit greatly from forecasting:** With 30 min/day driving and AUC = 0.90, they can drive 279 days/year
+- **Weekly seizure patients face significant restrictions** but can achieve meaningful driving with high-AUC forecasting (e.g., 118 days/year with AUC 0.90 and 30 min/day driving)
 
 ### 3.2 ROC Shape Sensitivity Analysis
 
@@ -145,7 +160,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ![Figure 1](Figure_1.png)
 
-**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline), assuming 1 hour of driving per day.
+**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below safety threshold (6× baseline, equivalent to 3 drinks), assuming 1 hour of driving per day.
 
 **Key features:**
 - **Three colored curves:** Show relationship between AUC and safe driving days for different seizure frequencies
@@ -154,9 +169,8 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
   - Orange: 1 seizure/week
 - **Filled circles:** Mark key AUC values (0.60, 0.70, 0.80, 0.90, 0.95, 0.99)
 - **Smooth curves:** Calculated analytically using equal-variance binormal ROC model with Bayes' theorem
-- **Inline labels:** Tufte-style data-integrated labels placed directly on curves
 
-**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures. With 1 hour/day driving at AUC 0.90: weekly seizures permit ~160 days/year, monthly seizures permit ~310 days/year, and yearly seizures permit 365 days/year (already safe).
+**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures when using the conservative 6× safety threshold. With 1 hour/day driving at AUC 0.90: weekly seizures permit ~68 days/year, monthly seizures permit ~212 days/year, and yearly seizures permit 365 days/year (already safe).
 
 ---
 
@@ -170,13 +184,13 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 - **Black curves:** Algorithms with AUROC = 0.60, 0.80, and 0.90 (thicker lines = higher AUC)
 - **X-axis:** Days per year the algorithm advises against driving ("time in warning")
 - **Y-axis:** Crash risk as a multiple of baseline sober driving risk
-- **Horizontal dashed lines:** Crash risks equivalent to driving after 1, 3, 4 (legal limit at 0.08% BAC), and 6 alcoholic drinks
-- **Black circles:** Minimum warning time required to achieve the legal-limit threshold (~16× baseline)
+- **Horizontal dashed lines:** Crash risks equivalent to driving after 1, 3, 4 (safety threshold at 0.05% BAC, 3 drinks), and 6 alcoholic drinks
+- **Black circles:** Minimum warning time required to achieve the safety threshold (~6× baseline)
 - **Light green region:** "Safe" zone (below 1-drink equivalent)
 - **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
-- **Light pink region:** "Unsafe" zone (above legal limit)
+- **Light pink region:** "Unsafe" zone (above safety threshold)
 
-**Updated crash model:** We compute crash risk accounting for the probability that a seizure occurs *during* driving:
+**Crash model:** We compute crash risk accounting for the probability that a seizure occurs *during* driving:
 
 $$P(\text{crash} | \text{seizure day}) = P(\text{driving at seizure time}) \times P(\text{crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \times p_0$$
 
@@ -196,7 +210,7 @@ Where:
 
 ![Figure S2](Figure_S2.png)
 
-**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain crash risk below legal intoxication threshold (16× baseline). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
+**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain crash risk below safety threshold (6× baseline, equivalent to 3 drinks). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
 
 **Key features:**
 - **Three colored curves** (per panel): Show relationship between AUC and safe driving days for different seizure frequencies
@@ -210,11 +224,11 @@ Where:
 
 ---
 
-### 4.4 Figure S3: Minimum Warning Days Required for Legal-Limit Safety
+### 4.4 Figure S3: Minimum Warning Days Required for Safety Threshold
 
 ![Figure S3](Figure_S3.png)
 
-**Description:** Two-panel figure showing how minimum warning days required to achieve legal-limit safety varies with AUC for each seizure frequency. Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day. The secondary y-axis shows the corresponding maximum driving days allowed per year (365 minus warning days).
+**Description:** Two-panel figure showing how minimum warning days required to achieve safety threshold varies with AUC for each seizure frequency. Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day. The secondary y-axis shows the corresponding maximum driving days allowed per year (365 minus warning days).
 
 ---
 
@@ -341,23 +355,23 @@ $$\text{Days in warning per year} = P(\text{warning}) \times 365$$
 
 ---
 
-### 5.7 Minimum Warning Days for Legal-Limit Safety
+### 5.7 Minimum Warning Days for Safety Threshold
 
-The legal limit for driving (BAC ≈ 0.08%) corresponds to approximately 16× baseline crash risk. We find the operating threshold $t$ such that:
+We use a safety threshold of 3 drinks (BAC ≈ 0.05%) corresponding to approximately 6× baseline crash risk—more conservative than the legal intoxication limit of 4 drinks (16× baseline). We find the operating threshold $t$ such that:
 
-$$\frac{P(\text{crash} | \text{safe day})}{p_0} \leq 16$$
+$$\frac{P(\text{crash} | \text{safe day})}{p_0} \leq 6$$
 
-The corresponding days in warning gives the minimum restriction required for legal-limit safety.
+The corresponding days in warning gives the minimum restriction required for the safety threshold.
 
 ---
 
 ### 5.8 Minimum Warning Days vs. AUC (Figure S3)
 
-For each AUC, we compute the minimum warning days required to achieve the legal-limit safety threshold by:
+For each AUC, we compute the minimum warning days required to achieve the safety threshold by:
 
 1. Computing $m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$
 2. Sweeping threshold $t$ to find operating points
-3. Identifying the threshold where crash risk equals 16× baseline
+3. Identifying the threshold where crash risk equals 6× baseline
 4. Computing the corresponding days in warning
 
 ---

@@ -190,12 +190,13 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 - **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
 - **Light pink region:** "Unsafe" zone (above safety threshold)
 
-**Crash model:** We compute crash risk accounting for the probability that a seizure occurs *during* driving:
+**Crash model:** On a seizure day, crash risk depends on the **timing** of when the seizure occurs relative to driving. Since seizures can happen at any time during the 24-hour day, we compute a weighted average of two scenarios:
 
-$$P(\text{crash} | \text{seizure day}) = P(\text{driving at seizure time}) \times P(\text{crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \times p_0$$
+$$P(\text{crash} | \text{seizure day}) = P(\text{seizure during driving}) \times P(\text{crash} | \text{seizure while driving}) + P(\text{seizure outside driving hours}) \times p_0$$
 
 Where:
-- $P(\text{driving at seizure time}) = \frac{\text{driving hours}}{24}$ (assuming seizure timing is uniformly distributed)
+- $P(\text{seizure during driving}) = \frac{\text{driving hours}}{24}$ (assuming seizure timing is uniformly distributed throughout the day)
+- $P(\text{seizure outside driving hours}) = 1 - \frac{\text{driving hours}}{24}$ (seizure occurred at another time, so subsequent driving carries only baseline risk)
 - $P(\text{crash} | \text{seizure while driving}) = 0.5$
 - $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
 

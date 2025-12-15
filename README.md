@@ -282,11 +282,13 @@ $$m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$$
 
 ### 5.2 Sensitivity and False Positive Rate
 
-For threshold $t$:
+For threshold $t$ applied to the forecast score $S$ (where higher scores indicate higher predicted seizure risk):
 
 $$\text{Sensitivity} = P(S > t | \text{seizure}) = 1 - \Phi(t - m) = \Phi(m - t)$$
 
 $$\text{FPR} = P(S > t | \text{no seizure}) = 1 - \Phi(t)$$
+
+The algorithm warns "unsafe to drive" when $S > t$ and indicates "safe to drive" when $S \leq t$.
 
 ---
 

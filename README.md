@@ -73,8 +73,6 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 - **`Figure_S5`** - ROC shape sensitivity analysis (supplementary)
 - **`Figure_S6`** - ROC curve geometries comparison (supplementary)
 
-*PNG versions are displayed in this README; PDF versions are provided for publication.*
-
 ---
 
 ## 3. Key Results

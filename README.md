@@ -43,11 +43,11 @@ This repository contains the complete analysis code, mathematical methods, and s
 
 ## 1. Overview
 
-This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain crash risk at or below a safety threshold of 3 drinks (approximately 6× baseline risk)—more conservative than the legal intoxication limit of 4 drinks (16× baseline risk). This choice reflects the principle that AI-assisted medical decisions should meet substantially higher safety standards than merely matching known dangerous activities.
+This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain fatal crash risk at or below a safety threshold of 6× baseline, corresponding to BAC ≈0.06–0.07% for adult drivers. This benchmark is aligned with the 0.05% BAC standard used in Utah and most European countries, and is more conservative than the 0.08% BAC legal limit used in 49 U.S. states. This benchmark refers specifically to relative risk of fatal single-vehicle crashes (not legal permissibility) and reflects the principle that AI-assisted medical decisions should meet substantially higher safety standards than merely matching known dangerous activities.
 
-**Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 1 hour per day, 1/24 ≈ 4.2%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal crash risk. We use 1 hour/day as the primary scenario in our main text figure, as this represents a typical driving duration for American drivers.[1,2]
+**Key modeling feature:** We explicitly model the probability that a seizure occurs *during* driving as a function of daily driving duration. For someone driving 30 minutes per day, the probability that a seizure coincides with driving is 0.5/24 ≈ 2.1%; for 1 hour per day, 1/24 ≈ 4.2%; for 2 hours of daily driving, this increases to 2/24 ≈ 8.3%. This recognizes that seizures occurring outside of driving hours pose minimal fatal crash risk. We use 1 hour/day as the primary scenario in our main text figure, as this represents a typical driving duration for American drivers.[1,2]
 
-**Key findings:** With the 3-drink (6×) safety threshold, patients with infrequent seizures (≤1 per year) remain safe even without forecasting. For patients with frequent seizures, high-performance forecasting algorithms (AUC ≥ 0.90) can enable meaningful driving privileges: with 1 hour/day driving, weekly seizures permit ~68 days/year, monthly seizures permit ~212 days/year, and yearly seizures permit 365 days/year.
+**Key findings:** With the 6× baseline fatal crash risk safety threshold, patients with infrequent seizures (≤1 per year) remain safe even without forecasting. For patients with frequent seizures, high-performance forecasting algorithms (AUC ≥ 0.90) can enable meaningful driving privileges: with 1 hour/day driving, weekly seizures permit ~68 days/year, monthly seizures permit ~212 days/year, and yearly seizures permit 365 days/year.
 
 ---
 
@@ -83,7 +83,7 @@ This analysis quantifies the trade-offs between seizure forecasting accuracy (me
 
 **Driving Restrictions Required to Achieve Safety Threshold by Seizure Frequency, Driving Duration, and Forecasting Performance**
 
-At the safety threshold (6× baseline crash risk, equivalent to 3 drinks—more conservative than legal intoxication limit):
+At the safety threshold (6× baseline fatal crash risk, corresponding to BAC ≈0.06–0.07%):
 
 #### 30 Minutes Driving per Day
 
@@ -160,7 +160,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ![Figure 1](Figure_1.png)
 
-**Description:** Annual driving days permitted under forecasting-based driving policy to maintain crash risk below safety threshold (6× baseline, equivalent to 3 drinks), assuming 1 hour of driving per day.
+**Description:** Annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below a safety threshold (6× baseline), corresponding to adult drivers at approximately BAC 0.06–0.07%, assuming 1 hour of driving per day.
 
 **Key features:**
 - **Three colored curves:** Show relationship between AUC and safe driving days for different seizure frequencies
@@ -190,15 +190,15 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 - **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
 - **Light pink region:** "Unsafe" zone (above safety threshold)
 
-**Crash model:** On a seizure day, crash risk depends on the **timing** of when the seizure occurs relative to driving. Since seizures can happen at any time during the 24-hour day, we compute a weighted average of two scenarios:
+**Crash model:** On a seizure day, fatal crash risk depends on the **timing** of when the seizure occurs relative to driving. Since seizures can happen at any time during the 24-hour day, we compute a weighted average of two scenarios:
 
-$$P(\text{crash} | \text{seizure day}) = P(\text{seizure during driving}) \times P(\text{crash} | \text{seizure while driving}) + P(\text{seizure outside driving hours}) \times p_0$$
+$$P(\text{fatal crash} | \text{seizure day}) = P(\text{seizure during driving}) \times P(\text{fatal crash} | \text{seizure while driving}) + P(\text{seizure outside driving hours}) \times p_0$$
 
 Where:
 - $P(\text{seizure during driving}) = \frac{\text{driving hours}}{24}$ (assuming seizure timing is uniformly distributed throughout the day)
 - $P(\text{seizure outside driving hours}) = 1 - \frac{\text{driving hours}}{24}$ (seizure occurred at another time, so subsequent driving carries only baseline risk)
-- $P(\text{crash} | \text{seizure while driving}) = 0.5$
-- $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
+- $P(\text{fatal crash} | \text{seizure while driving}) = 0.5$
+- $p_0 = 1.5 \times 10^{-5}$ (baseline fatal crash risk per trip)
 
 **Key observations:**
 - **Patients with yearly seizures** are already below the legal-limit threshold even without forecasting, regardless of driving duration
@@ -211,7 +211,7 @@ Where:
 
 ![Figure S2](Figure_S2.png)
 
-**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain crash risk below safety threshold (6× baseline, equivalent to 3 drinks). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
+**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below safety threshold (6× baseline, corresponding to BAC ≈0.06–0.07%). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
 
 **Key features:**
 - **Three colored curves** (per panel): Show relationship between AUC and safe driving days for different seizure frequencies
@@ -245,7 +245,7 @@ Where:
 - Threshold *t* defines the operating point
 - Bayes' theorem combines sensitivity, specificity, and base rate to compute posterior seizure risk
 
-This schematic shows how the forecasting algorithm separates seizure from non-seizure days and how Bayes' rule computes crash risk on "safe" days.
+This schematic shows how the forecasting algorithm separates seizure from non-seizure days and how Bayes' rule computes fatal crash risk on "safe" days.
 
 ---
 
@@ -253,7 +253,7 @@ This schematic shows how the forecasting algorithm separates seizure from non-se
 
 ![Figure S5](Figure_S5.png)
 
-**Description:** Compares crash risk vs. warning days for different ROC curve shapes (equal-variance binormal, S-shaped/unequal variance, hooked/mixture model) at fixed AUC ≈ 0.90. This analysis uses 1 hour of driving per day (same as the main text figure). The figure shows three panels (one per seizure frequency) with colored curves for each ROC shape.
+**Description:** Compares fatal crash risk vs. warning days for different ROC curve shapes (equal-variance binormal, S-shaped/unequal variance, hooked/mixture model) at fixed AUC ≈ 0.90. This analysis uses 1 hour of driving per day (same as the main text figure). The figure shows three panels (one per seizure frequency) with colored curves for each ROC shape.
 
 ---
 
@@ -317,22 +317,22 @@ $$= \frac{\Phi(t - m) \cdot p}{\Phi(t - m) \cdot p + \Phi(t) \cdot (1-p)}$$
 
 ---
 
-### 5.5 Crash Risk on "Safe" Days
+### 5.5 Fatal Crash Risk on "Safe" Days
 
 **Updated model accounting for driving exposure:**
 
-The probability of a crash on a "safe" day depends on whether a seizure occurs and, if so, whether the person is driving at that moment:
+The probability of a fatal crash on a "safe" day depends on whether a seizure occurs and, if so, whether the person is driving at that moment:
 
-$$P(\text{crash} | \text{safe day}) = P(\text{seizure} | \text{safe}) \cdot P(\text{crash} | \text{seizure day}) + P(\text{no seizure} | \text{safe}) \cdot p_0$$
+$$P(\text{fatal crash} | \text{safe day}) = P(\text{seizure} | \text{safe}) \cdot P(\text{fatal crash} | \text{seizure day}) + P(\text{no seizure} | \text{safe}) \cdot p_0$$
 
-Where the crash probability given a seizure day accounts for driving exposure:
+Where the fatal crash probability given a seizure day accounts for driving exposure:
 
-$$P(\text{crash} | \text{seizure day}) = P(\text{driving at seizure time}) \cdot P(\text{crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \cdot p_0$$
+$$P(\text{fatal crash} | \text{seizure day}) = P(\text{driving at seizure time}) \cdot P(\text{fatal crash} | \text{seizure while driving}) + P(\text{not driving at seizure time}) \cdot p_0$$
 
 **Key parameters:**
 - $P(\text{driving at seizure time}) = \frac{D}{24}$, where $D$ is hours of driving per day
-- $P(\text{crash} | \text{seizure while driving}) = 0.5$ (assumed)
-- $p_0 = 1.5 \times 10^{-5}$ (baseline crash risk per trip)
+- $P(\text{fatal crash} | \text{seizure while driving}) = 0.5$ (assumed)
+- $p_0 = 1.5 \times 10^{-5}$ (baseline fatal crash risk per trip)
 
 **For 30 minutes driving/day:**
 $$P(\text{driving at seizure time}) = \frac{0.5}{24} \approx 0.021$$
@@ -340,11 +340,11 @@ $$P(\text{driving at seizure time}) = \frac{0.5}{24} \approx 0.021$$
 **For 2 hours driving/day:**
 $$P(\text{driving at seizure time}) = \frac{2}{24} \approx 0.083$$
 
-This formulation recognizes that even if a seizure occurs on a given day, it only poses a driving risk if it happens to occur during the limited time window when the person is actually driving.
+This formulation recognizes that even if a seizure occurs on a given day, it only poses a fatal crash risk if it happens to occur during the limited time window when the person is actually driving.
 
-**Relative crash risk:**
+**Relative fatal crash risk:**
 
-$$\text{Relative risk} = \frac{P(\text{crash} | \text{safe day})}{p_0}$$
+$$\text{Relative risk} = \frac{P(\text{fatal crash} | \text{safe day})}{p_0}$$
 
 ---
 
@@ -360,9 +360,9 @@ $$\text{Days in warning per year} = P(\text{warning}) \times 365$$
 
 ### 5.7 Minimum Warning Days for Safety Threshold
 
-We use a safety threshold of 3 drinks (BAC ≈ 0.05%) corresponding to approximately 6× baseline crash risk—more conservative than the legal intoxication limit of 4 drinks (16× baseline). We find the operating threshold $t$ such that:
+We use a safety threshold of 6× baseline fatal crash risk, corresponding to BAC ≈0.06–0.07% for adult drivers based on established traffic safety models. This benchmark is aligned with the 0.05% BAC standard used in Utah and most European countries, and is more conservative than the 0.08% BAC legal limit used in 49 U.S. states. This refers specifically to relative risk of fatal single-vehicle crashes. We find the operating threshold $t$ such that:
 
-$$\frac{P(\text{crash} | \text{safe day})}{p_0} \leq 6$$
+$$\frac{P(\text{fatal crash} | \text{safe day})}{p_0} \leq 6$$
 
 The corresponding days in warning gives the minimum restriction required for the safety threshold.
 
@@ -374,7 +374,7 @@ For each AUC, we compute the minimum warning days required to achieve the safety
 
 1. Computing $m = \sqrt{2} \cdot \Phi^{-1}(\text{AUC})$
 2. Sweeping threshold $t$ to find operating points
-3. Identifying the threshold where crash risk equals 6× baseline
+3. Identifying the threshold where fatal crash risk equals 6× baseline
 4. Computing the corresponding days in warning
 
 ---

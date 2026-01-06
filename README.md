@@ -582,4 +582,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-*Last updated: December 7, 2024*
+*Last updated: January 6, 2026*

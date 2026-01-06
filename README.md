@@ -127,7 +127,7 @@ At the safety threshold (6× baseline fatal crash risk, corresponding to BAC ≈
 
 **Key Insights:**
 
-- **More conservative threshold requires higher performance:** With the 6× safety threshold (3 drinks), algorithms need AUC ≥ 0.90 to provide meaningful driving days for patients with frequent seizures
+- **More conservative threshold requires higher performance:** With the 6× safety threshold (BAC ≈0.05–0.07%), algorithms need AUC ≥ 0.90 to provide meaningful driving days for patients with frequent seizures
 - **Driving duration matters substantially:** For weekly seizures with AUC = 0.90, a 30-min/day driver gets 118 driving days/year vs. only 35 days for a 2-hr/day driver
 - **Patients with rare seizures (≤1/year) are already safe** under this model regardless of AUC, because the joint probability of (seizure today) × (seizure occurs while driving) × (crash given seizure) is extremely low
 - **Monthly seizure patients benefit greatly from forecasting:** With 30 min/day driving and AUC = 0.90, they can drive 279 days/year
@@ -182,10 +182,10 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 - **Black curves:** Algorithms with AUROC = 0.60, 0.80, and 0.90 (thicker lines = higher AUC)
 - **X-axis:** Days per year the algorithm advises against driving ("time in warning")
 - **Y-axis:** Crash risk as a multiple of baseline sober driving risk
-- **Horizontal dashed lines:** Crash risks equivalent to driving after 1, 3, 4 (safety threshold at 0.05% BAC, 3 drinks), and 6 alcoholic drinks
+- **Horizontal dashed lines:** Crash risks equivalent to BAC levels of 0.02%, 0.05–0.07% (safety threshold), and 0.12%
 - **Black circles:** Minimum warning time required to achieve the safety threshold (~6× baseline)
-- **Light green region:** "Safe" zone (below 1-drink equivalent)
-- **Light yellow region:** "Caution" zone (1-4 drinks equivalent)
+- **Light green region:** "Safe" zone (below 0.02% BAC)
+- **Light yellow region:** "Caution" zone (0.02–0.07% BAC)
 - **Light pink region:** "Unsafe" zone (above safety threshold)
 
 **Crash model:** On a seizure day, fatal crash risk depends on the **timing** of when the seizure occurs relative to driving. Since seizures can happen at any time during the 24-hour day, we compute a weighted average of two scenarios:

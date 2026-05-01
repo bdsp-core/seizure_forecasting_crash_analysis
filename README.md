@@ -46,8 +46,6 @@ This repository contains the complete analysis code, mathematical methods, and s
 
 This analysis quantifies the trade-offs between seizure forecasting accuracy (measured by AUC), driving exposure, and driving restrictions required to maintain fatal crash risk at or below a safety threshold of 6× baseline, corresponding to BAC ≈0.06–0.07% for adult drivers. This benchmark is aligned with the 0.05% BAC standard used in Utah and most European countries, and is more conservative than the 0.08% BAC legal limit used in 49 U.S. states. This benchmark refers specifically to relative risk of fatal single-vehicle crashes (not legal permissibility) and reflects the principle that AI-assisted medical decisions should meet substantially higher safety standards than merely matching known dangerous activities.
 
-**Note (revision history).** This README and the accompanying figures reflect a unit-consistent reformulation of the original per-trip baseline model. The earlier formulation used a "per-trip" baseline crash probability that, on inspection, corresponded to an *any-crash* (not fatal) per-trip rate, while the seizure-related risk was scaled by a per-day driving fraction — mixing units and producing an artifactual sensitivity to driving duration. The reformulated model uses a per-hour fatal baseline derived from NHTSA/FHWA data and a fatal-specific $q_f$ derived from the seizure-and-driving literature; see Section 5.5.
-
 **Key modeling feature.** We model relative fatal crash risk on forecasted "safe" days using a unit-consistent per-hour fatal-crash baseline ($\lambda_f \approx 4.5 \times 10^{-7}$/hr, derived from NHTSA Passenger Vehicles 2023 and FHWA Highway Statistics 2023) and a fatal-specific conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while driving}) = 0.02$ (central estimate; range 0.005–0.05 examined as sensitivity). The probability that a seizure coincides with driving still scales as $D/24$ for daily driving duration $D$, but because both numerator and denominator now scale with exposure, the relative-risk benchmark is approximately invariant to $D$ — only absolute risk scales. We use 1 hour/day as the primary scenario in our main text figure, as this represents a typical driving duration for American drivers.[1,2]
 
 **Key findings:** With the 6× baseline fatal crash risk safety threshold and central $q_f = 0.02$, patients with infrequent seizures (≤1 per year) approach unrestricted driving even at low AUC. For patients with frequent seizures, high-performance forecasting algorithms (AUC ≥ 0.90) can enable meaningful driving privileges: weekly seizures permit ~53 days/year, monthly seizures permit ~182 days/year, and yearly seizures permit ~365 days/year. These results are largely insensitive to driving duration but moderately sensitive to $q_f$ (see Section 3.3).
@@ -107,7 +105,7 @@ At the safety threshold (6× baseline fatal crash risk, corresponding to BAC ≈
 | | 0.95 | 0 | 365 | 1.0 (already safe) |
 | | 0.99 | 0 | 365 | 1.0 (already safe) |
 
-**Note on driving duration.** Under the unit-consistent reformulated model, the relative-risk threshold depends only weakly on driving duration $D$. The numbers above apply to all examined durations (30 min/day, 1 hr/day, 2 hr/day) to within a few days/year (the small residual dependence comes from the $(1 - D/24)$ correction). Absolute fatal crash counts still scale with $D$, but the BAC-anchored relative-risk benchmark is exposure-invariant. Section 5.5 derives this property.
+**Note on driving duration.** The relative-risk threshold depends only weakly on driving duration $D$. The numbers above apply to all examined durations (30 min/day, 1 hr/day, 2 hr/day) to within a few days/year (the small residual dependence comes from the $(1 - D/24)$ correction). Absolute fatal crash counts still scale with $D$, but the BAC-anchored relative-risk benchmark is exposure-invariant. Section 5.5 derives this property.
 
 **Key Insights:**
 
@@ -136,7 +134,7 @@ Comparison of driving days allowed per year across different ROC shapes (all AUC
 
 ### 3.3 Sensitivity to q_f
 
-The conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while driving})$ is the most uncertain parameter in the reformulated model. We examined a defensible range $q_f \in [0.005, 0.05]$ derived from:
+The conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while driving})$ is the most uncertain parameter in the model. We examined a defensible range $q_f \in [0.005, 0.05]$ derived from:
 
 - **Lower bound (0.005):** Krauss/Drazkowski-style estimates of moderate crash rate (~0.30) given seizure while driving × moderate case-fatality (~0.02) — closer to baseline fatal-crash severity.
 - **Central (0.02):** Gastaut & Zifkin 1987 observed crash rate (~0.55) × case-fatality of seizure-related crashes (~0.03–0.05, inferred from Sheth 2004 and Drazkowski 2003).
@@ -164,7 +162,7 @@ The amplification factor $A = q_f / (24 \, \lambda_f)$ varies from ~463 (lower) 
 
 ![Figure 1](Figure_1.png)
 
-**Description:** Annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below a safety threshold (6× baseline), corresponding to adult drivers at approximately BAC 0.06–0.07%, assuming 1 hour of driving per day. Computed under the reformulated per-hour fatal model with $q_f = 0.02$.
+**Description:** Annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below a safety threshold (6× baseline), corresponding to adult drivers at approximately BAC 0.06–0.07%, assuming 1 hour of driving per day. Computed with $q_f = 0.02$.
 
 **Key features:**
 - **Three colored curves:** Show relationship between AUC and safe driving days for different seizure frequencies
@@ -174,7 +172,7 @@ The amplification factor $A = q_f / (24 \, \lambda_f)$ varies from ~463 (lower) 
 - **Filled circles:** Mark key AUC values (0.60, 0.70, 0.80, 0.90, 0.95, 0.99)
 - **Smooth curves:** Calculated analytically using equal-variance binormal ROC model with Bayes' theorem
 
-**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures when using the conservative 6× safety threshold. At AUC 0.90: weekly seizures permit ~53 days/year, monthly seizures permit ~182 days/year, and yearly seizures permit ~365 days/year (already safe). Because the reformulated model is approximately exposure-invariant in relative risk, these numbers apply across 30 min/day, 1 hr/day, and 2 hr/day to within a few days/year.
+**Key finding:** Even high-performance algorithms (AUC = 0.90) require substantial driving restrictions for patients with frequent seizures when using the conservative 6× safety threshold. At AUC 0.90: weekly seizures permit ~53 days/year, monthly seizures permit ~182 days/year, and yearly seizures permit ~365 days/year (already safe). Because the relative-risk benchmark is approximately exposure-invariant, these numbers apply across 30 min/day, 1 hr/day, and 2 hr/day to within a few days/year.
 
 ---
 
@@ -203,11 +201,9 @@ Where:
 - $\lambda_f = 4.5 \times 10^{-7}$/hr (NHTSA/FHWA-derived)
 
 **Key observations:**
-- **Patients with yearly seizures** are already below the legal-limit threshold even without forecasting.
-- **Driving duration has only a minor impact** under the reformulated unit-consistent model: relative risk depends on the ratio $q_f / (24\,\lambda_f)$, which is independent of $D$. The small remaining duration dependence comes from the $(1 - D/24)$ correction term.
+- **Patients with yearly seizures** sit just at the legal-limit threshold without forecasting and clear it comfortably with even modest AUC.
+- **Driving duration has only a minor impact:** relative risk depends on the ratio $q_f / (24\,\lambda_f)$, which is independent of $D$. The small remaining duration dependence comes from the $(1 - D/24)$ correction term.
 - **Monthly seizure patients** can achieve safe driving with high-performance forecasting (AUC ≥ 0.90).
-
-**Note:** Figure S1 in this repository was generated under the *original* per-trip model and has not yet been regenerated under the reformulated parameters. The qualitative shape of the curves is preserved but the numeric crossings differ. See [reformulated_fatal_model.py](reformulated_fatal_model.py) and the comparison figures (`Figure_*_compare.{png,pdf}`).
 
 ---
 
@@ -215,9 +211,7 @@ Where:
 
 ![Figure S2](Figure_S2.png)
 
-**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below safety threshold (6× baseline, corresponding to BAC ≈0.06–0.07%). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day.
-
-**Note:** Figure S2 in this repository was generated under the *original* per-trip model. Under the reformulated unit-consistent model, the 30-min and 2-hr panels are nearly identical (relative risk is exposure-invariant); the original visual contrast was an artifact of mixing per-trip and per-day units. See `Figure_S2_compare_30min.png` / `Figure_S2_compare_2hr.png` for old-vs-new side-by-side panels.
+**Description:** Two-panel figure showing annual driving days permitted under forecasting-based driving policy to maintain fatal crash risk below safety threshold (6× baseline, corresponding to BAC ≈0.06–0.07%). Left panel: 30 minutes driving/day. Right panel: 2 hours driving/day. Because the relative-risk benchmark is approximately exposure-invariant, the two panels are nearly identical; absolute fatal crash risk still scales with driving duration but the relative-risk threshold against which the safety benchmark is anchored does not.
 
 **Key features:**
 - **Three colored curves** (per panel): Show relationship between AUC and safe driving days for different seizure frequencies
@@ -349,7 +343,7 @@ $$P(\text{fatal crash} \mid \text{safe day}) = P(\text{seizure} \mid \text{safe}
 
 $$\text{RR}(D) = \frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \;\approx\; 1 + P(\text{seizure} \mid \text{safe}) \cdot \frac{q_f}{24 \, \lambda_f}$$
 
-**Duration invariance.** A direct consequence of unit-consistent scaling: the dominant amplification factor $A = q_f / (24 \, \lambda_f)$ does not depend on $D$. Absolute fatal crash risk does scale with driving exposure, but the *relative* risk against the BAC-anchored 6× threshold is approximately exposure-invariant. The earlier per-trip formulation produced a strong duration dependence as an artifact of mixing per-trip and per-day units.
+**Duration invariance.** Because both $B(D)$ and the seizure-related risk in $P(\text{fatal crash} \mid \text{seizure day})$ scale with $D$, the dominant amplification factor $A = q_f / (24 \, \lambda_f)$ does not depend on $D$. Absolute fatal crash risk does scale with driving exposure, but the *relative* risk against the BAC-anchored 6× threshold is approximately exposure-invariant. The small residual dependence comes from the $(1 - D/24)$ correction term.
 
 ---
 

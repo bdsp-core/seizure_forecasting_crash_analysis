@@ -29,10 +29,10 @@ This repository contains the complete analysis code, mathematical methods, and s
    - 5.4 [Posterior Probability (Bayes' Rule)](#54-posterior-probability-of-seizure-on-safe-days)
    - 5.5 [Crash Risk Calculation](#55-crash-risk-on-safe-days)
    - 5.6 [Time in Warning](#56-time-in-warning)
-   - 5.7 [Safety Threshold Threshold](#57-minimum-warning-days-for-legal-limit-safety)
-   - 5.8 [AUC Performance Curves](#58-minimum-warning-days-vs-auc-figure-s1)
+   - 5.7 [Minimum Warning Days for Safety Threshold](#57-minimum-warning-days-for-safety-threshold)
+   - 5.8 [Minimum Warning Days vs. AUC](#58-minimum-warning-days-vs-auc-figure-s3)
    - 5.9 [Reproducibility](#59-reproducibility)
-   - 5.10 [ROC Shape Analysis](#510-why-roc-shape-matters-and-why-it-doesnt)
+   - 5.10 [Why ROC Shape Matters (and Why It Doesn't)](#510-why-roc-shape-matters-and-why-it-doesnt)
    - 5.11 [Alternative ROC Models](#511-alternative-roc-models-tested)
    - 5.12 [Mathematical Formulations](#512-mathematical-formulations-of-alternative-roc-shapes)
    - 5.13 [Impact on Conclusions](#513-impact-on-driving-safety-conclusions)
@@ -146,9 +146,9 @@ The conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while
 |---|---|---|---|
 | 1/week | 154 | 53 | 20 |
 | 1/month | 314 | 182 | 99 |
-| 1/year | 365 | 365 | 332 |
+| 1/year | 365 | 365 | 334 |
 
-The amplification factor $A = q_f / (24 \, \lambda_f)$ varies from ~463 (lower) through ~1852 (central) to ~4630 (upper); the corresponding maximum tolerable $P(\text{seizure} \mid \text{safe})$ for RR ≤ 6 ranges from 1.08% down to 0.108%.
+The amplification factor $A = q_f / (24 \, \lambda_f)$ varies from ~463 (lower) through ~1852 (central) to ~4630 (upper); the corresponding maximum tolerable $P(\text{seizure} \mid \text{safe})$ for RR ≤ 5.66 (BAC-precise threshold; see §5.7) ranges from ~1.0% down to ~0.10%.
 
 ![Figure: q_f sensitivity](Figure_qf_sensitivity.png)
 
@@ -317,8 +317,6 @@ $$= \frac{\Phi(t - m) \cdot p}{\Phi(t - m) \cdot p + \Phi(t) \cdot (1-p)}$$
 
 ### 5.5 Fatal Crash Risk on "Safe" Days
 
-**Reformulated model with unit-consistent per-hour fatal baseline:**
-
 Let $D$ be hours of driving per day and $\lambda_f$ the baseline sober fatal-crash rate per driving hour. The baseline (per-day) fatal crash risk for a sober driver is then:
 
 $$B(D) = D \cdot \lambda_f$$
@@ -359,9 +357,13 @@ $$\text{Days in warning per year} = P(\text{warning}) \times 365$$
 
 ### 5.7 Minimum Warning Days for Safety Threshold
 
-We use a safety threshold of 6× baseline fatal crash risk, corresponding to BAC ≈0.06–0.07% for adult drivers based on established traffic safety models. This benchmark is aligned with the 0.05% BAC standard used in Utah and most European countries, and is more conservative than the 0.08% BAC legal limit used in 49 U.S. states. This refers specifically to relative risk of fatal single-vehicle crashes. We find the operating threshold $t$ such that:
+We use a safety threshold derived from the BAC 0.05% standard. Under the doubling-per-0.02-BAC parametric model of Zador et al. and Compton & Berning, the relative fatal-crash risk at BAC 0.05% is
 
-$$\frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \leq 6$$
+$$T = 2^{0.05/0.02} \approx 5.66$$
+
+which is approximately 6× baseline. The README and manuscript prose describe this as a "6× threshold" for readability; the code uses the precise value $T = 2^{0.05/0.02}$. This benchmark is aligned with the 0.05% BAC standard used in Utah and most European countries, and is more conservative than the 0.08% BAC legal limit used in 49 U.S. states. We find the operating threshold $t$ such that:
+
+$$\frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \leq T$$
 
 where $B(D) = D\,\lambda_f$ is the per-day baseline fatal crash risk. The corresponding days in warning gives the minimum restriction required for the safety threshold.
 
@@ -500,7 +502,7 @@ Empirical ROC curves can indeed deviate from binormal shape due to:
 
 ### Validity of the driving exposure model
 
-The updated model assumes:
+The model assumes:
 
 1. **Seizure timing is uniformly distributed** throughout the day. This is a simplification—many patients have circadian seizure patterns (e.g., nocturnal epilepsy, morning clustering). For patients with seizures concentrated outside typical driving hours, the model may be conservative; for those with daytime clustering, it may be optimistic.
 
@@ -579,4 +581,4 @@ See [LICENSE](LICENSE) file for details.
 
 ---
 
-*Last updated: January 6, 2026*
+*Last updated: May 1, 2026*

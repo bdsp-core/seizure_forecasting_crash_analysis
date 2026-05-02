@@ -148,7 +148,7 @@ The conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while
 | 1/month | 314 | 182 | 99 |
 | 1/year | 365 | 365 | 334 |
 
-The amplification factor $A = q_f / (24 \, \lambda_f)$ varies from ~463 (lower) through ~1852 (central) to ~4630 (upper); the corresponding maximum tolerable $P(\text{seizure} \mid \text{safe})$ for RR ≤ 5.66 (BAC-precise threshold; see §5.7) ranges from ~1.0% down to ~0.10%.
+The amplification factor $A = q_f / (24 \lambda_f)$ varies from ~463 (lower) through ~1852 (central) to ~4630 (upper); the corresponding maximum tolerable $P(\text{seizure} \mid \text{safe})$ for RR ≤ 5.66 (BAC-precise threshold; see §5.7) ranges from ~1.0% down to ~0.10%.
 
 ![Figure: q_f sensitivity](Figure_qf_sensitivity.png)
 
@@ -323,7 +323,7 @@ $$B(D) = D \cdot \lambda_f$$
 
 On a day when a seizure occurs, the per-day fatal crash risk depends on whether the seizure happens to fall within the driving window:
 
-$$P(\text{fatal crash} \mid \text{seizure day}) = \frac{D}{24} \cdot q_f \;+\; \left(1 - \frac{D}{24}\right) \cdot B(D)$$
+$$P(\text{fatal crash} \mid \text{seizure day}) = \frac{D}{24} \cdot q_f + \left(1 - \frac{D}{24}\right) \cdot B(D)$$
 
 On a forecasted "safe" day, the residual fatal crash risk is:
 
@@ -339,9 +339,9 @@ $$P(\text{fatal crash} \mid \text{safe day}) = P(\text{seizure} \mid \text{safe}
 
 **Relative fatal crash risk** (the quantity constrained by the 6× safety threshold):
 
-$$\text{RR}(D) = \frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \;\approx\; 1 + P(\text{seizure} \mid \text{safe}) \cdot \frac{q_f}{24 \, \lambda_f}$$
+$$\text{RR}(D) = \frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \approx 1 + P(\text{seizure} \mid \text{safe}) \cdot \frac{q_f}{24 \lambda_f}$$
 
-**Duration invariance.** Because both $B(D)$ and the seizure-related risk in $P(\text{fatal crash} \mid \text{seizure day})$ scale with $D$, the dominant amplification factor $A = q_f / (24 \, \lambda_f)$ does not depend on $D$. Absolute fatal crash risk does scale with driving exposure, but the *relative* risk against the BAC-anchored 6× threshold is approximately exposure-invariant. The small residual dependence comes from the $(1 - D/24)$ correction term.
+**Duration invariance.** Because both $B(D)$ and the seizure-related risk in $P(\text{fatal crash} \mid \text{seizure day})$ scale with $D$, the dominant amplification factor $A = q_f / (24 \lambda_f)$ does not depend on $D$. Absolute fatal crash risk does scale with driving exposure, but the *relative* risk against the BAC-anchored 6× threshold is approximately exposure-invariant. The small residual dependence comes from the $(1 - D/24)$ correction term.
 
 ---
 

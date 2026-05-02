@@ -337,11 +337,29 @@ $$P(\text{fatal crash} \mid \text{safe day}) = P(\text{seizure} \mid \text{safe}
 | $q_f$ | $P(\text{fatal crash} \mid \text{seizure while driving})$ | $0.02$ (central; range $0.005$–$0.05$) | Gastaut & Zifkin 1987 (≈55% crash rate among seizures while driving) × case-fatality ≈3–5% inferred from Sheth et al. 2004 + Drazkowski et al. 2003 |
 | $D$ | Driving hours per day | 0.5, 1, 2 | — |
 
-**Relative fatal crash risk** (the quantity constrained by the 6× safety threshold):
+**Relative fatal crash risk.** Let $\pi = P(\text{seizure} \mid \text{safe})$. Substitute the seizure-day expression into the safe-day expression and divide by the baseline $B(D)$:
 
-$$\text{RR}(D) = \frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} \approx 1 + P(\text{seizure} \mid \text{safe}) \cdot \frac{q_f}{24 \lambda_f}$$
+$$\text{RR}(D) = \frac{P(\text{fatal crash} \mid \text{safe day})}{B(D)} = \frac{\pi \cdot \left[\dfrac{D}{24} q_f + \left(1 - \dfrac{D}{24}\right) B(D)\right] + (1 - \pi) \cdot B(D)}{B(D)}$$
 
-**Duration invariance.** Because both $B(D)$ and the seizure-related risk in $P(\text{fatal crash} \mid \text{seizure day})$ scale with $D$, the dominant amplification factor $A = q_f / (24 \lambda_f)$ does not depend on $D$. Absolute fatal crash risk does scale with driving exposure, but the *relative* risk against the BAC-anchored 6× threshold is approximately exposure-invariant. The small residual dependence comes from the $(1 - D/24)$ correction term.
+Distribute the numerator and divide each term by $B(D) = D \lambda_f$:
+
+$$\text{RR}(D) = \pi \cdot \frac{(D/24) \, q_f}{D \lambda_f} + \pi \cdot \left(1 - \frac{D}{24}\right) + (1 - \pi)$$
+
+The $D$ in the first term cancels:
+
+$$\text{RR}(D) = \pi \cdot \frac{q_f}{24 \lambda_f} + \pi - \pi \cdot \frac{D}{24} + 1 - \pi$$
+
+The $\pi$ and $-\pi$ cancel, leaving:
+
+$$\text{RR}(D) = 1 + \pi \cdot \left[\frac{q_f}{24 \lambda_f} - \frac{D}{24}\right]$$
+
+This is the *exact* expression. Under our parameters, $q_f / (24 \lambda_f) = 0.02 / (24 \cdot 4.5\times 10^{-7}) \approx 1852$, while $D/24 \leq 2/24 \approx 0.083$ for $D \leq 2$ hours. Since $1852 \gg 0.083$, the $D/24$ term is negligible and we approximate:
+
+$$\boxed{\text{RR}(D) \approx 1 + \pi \cdot \frac{q_f}{24 \lambda_f} = 1 + \pi \cdot A}$$
+
+where $A = q_f / (24 \lambda_f)$ is the **amplification factor**.
+
+**Duration invariance.** The approximation makes the $D$-dependence vanish entirely: the relative-risk benchmark is exposure-invariant to ~5 parts in $10^5$ at $D = 1$ hr (the residual $D/24$ correction is at most $0.042 \pi$ vs the dominant $\sim 1852 \pi$). Absolute fatal crash risk does scale with driving exposure (through $B(D)$), but the *relative* risk against the BAC-anchored 6× threshold does not.
 
 ---
 

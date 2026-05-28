@@ -333,9 +333,15 @@ $$P(\text{fatal crash} \mid \text{safe day}) = P(\text{seizure} \mid \text{safe}
 
 | Symbol | Meaning | Value | Source |
 |---|---|---|---|
-| $\lambda_f$ | Baseline fatal crash rate per hour of sober driving | $4.5 \times 10^{-7}$/hr | NHTSA *Passenger Vehicles 2023* (DOT HS 813 723): ~1.4 fatal involvements / 100M VMT × ~32 mph mean speed (FHWA Highway Statistics 2023, Table VM-1) |
-| $q_f$ | $P(\text{fatal crash} \mid \text{seizure while driving})$ | $0.02$ (central; range $0.005$–$0.05$) | Gastaut & Zifkin 1987 (≈55% crash rate among seizures while driving) × case-fatality ≈3–5% inferred from Sheth et al. 2004 + Drazkowski et al. 2003 |
+| $\lambda_f$ | Baseline fatal crash rate per hour of sober driving | $4.5 \times 10^{-7}$/hr | NHTSA *Passenger Vehicles 2023* + FHWA *Highway Statistics 2023* + AAA *American Driving Survey 2023* (see derivation below) |
+| $q_f$ | $P(\text{fatal crash} \mid \text{seizure while driving})$ | $0.02$ (central; range $0.005$–$0.05$) | Gastaut & Zifkin 1987 (≈55% crash rate among seizures while driving) × case-fatality ≈3–5% inferred from Sheth et al. 2004 + Drazkowski et al. 2003 (see Section 3.3) |
 | $D$ | Driving hours per day | 0.5, 1, 2 | — |
+
+**Derivation of the baseline rate $\lambda_f$.** NHTSA *Passenger Vehicles 2023* reports ~44,000 passenger vehicles involved in fatal crashes; FHWA *Highway Statistics 2023* Table VM-1 reports ~2.88 trillion light-duty vehicle-miles traveled. The ratio is ≈1.5 passenger-vehicle fatal-crash involvements per 100 million miles, i.e. $1.5\times 10^{-8}$ per mile. Converting from per-mile to per-hour requires a driving speed: the AAA *American Driving Survey 2023* reports ≈29.1 miles over ≈60.7 minutes per driver per day, i.e. ≈29 mph. Then
+
+$$\lambda_f \approx 1.5\times 10^{-8}\ \text{per mile} \times 29\ \text{mph} \approx 4.4\times 10^{-7}\ \text{per hour} \approx 4.5\times 10^{-7}\,/\text{hr}.$$
+
+Note that FHWA Table VM-1 supplies the VMT denominator only; the driving speed used for the per-mile→per-hour conversion comes from the AAA survey, not from FHWA.
 
 **Relative fatal crash risk.** Let $\pi = P(\text{seizure} \mid \text{safe})$. Substitute the seizure-day expression into the safe-day expression and divide by the baseline $B(D)$:
 

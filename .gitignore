@@ -1,0 +1,13 @@
+# macOS
+.DS_Store
+
+# LaTeX build artifacts (appendix.pdf IS tracked; the rest are generated)
+*.aux
+*.log
+*.out
+*.toc
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.synctex.gz

@@ -40,34 +40,34 @@ All calculations are analytic (closed-form); the accompanying Jupyter notebook
 We quantify the trade-off between seizure-forecasting accuracy (AUC), driving exposure,
 and the driving restrictions required to maintain fatal crash risk at or below a safety
 threshold of approximately $6\times$ baseline, corresponding to BAC $\approx 0.05$--$0.07\%$
-for adult drivers. This benchmark is aligned with the $0.05\%$ BAC standard used in Utah
-and most European countries and is more conservative than the $0.08\%$ BAC limit used in
+for adult drivers. This benchmark aligns with the $0.05\%$ BAC standard used in Utah
+and most European countries, more conservative than the $0.08\%$ BAC limit in
 $49$ U.S.\ states.
 
 \paragraph{Key modeling feature.}
 Relative fatal crash risk on forecasted ``safe'' days is computed using a per-hour
 fatal-crash baseline $\lambda_f \approx 4.5 \times 10^{-7}\,\text{hr}^{-1}$ and a
 conditional probability $q_f = P(\text{fatal crash} \mid \text{seizure while driving}) =
-0.02$ (central estimate; range $0.005$--$0.05$ examined in sensitivity analyses).
+0.02$ (central estimate; range $0.005$--$0.05$ in sensitivity analyses).
 The probability that a seizure coincides with driving scales as $D/24$ for daily driving
-duration $D$, but because both the seizure-related risk and the baseline risk scale with
-exposure, the relative-risk benchmark is approximately invariant to $D$
+duration $D$; however, because both seizure-related and baseline risk scale with
+exposure, the relative-risk benchmark remains approximately invariant to $D$
 (Section~\ref{sec:crash-risk}).
 
 \paragraph{Key findings.}
 Patients with infrequent seizures ($\le 1$/year) approach unrestricted driving even at
-low AUC. Patients with frequent seizures require AUC $\ge 0.90$ to enable meaningful
-driving. At AUC $0.90$ and $1$\,hr/day driving: weekly seizures permit $\approx 53$
+low AUC, whereas patients with frequent seizures require AUC $\ge 0.90$ to drive
+meaningfully. At AUC $0.90$ and $1$\,hr/day driving, weekly seizures permit $\approx 53$
 days/year, monthly seizures $\approx 182$, and yearly seizures $\approx 365$.
-These results are largely insensitive to driving duration but moderately sensitive to
-$q_f$ (Section~\ref{sec:sensitivity}).
+These results depend little on driving duration but moderately on $q_f$
+(Section~\ref{sec:sensitivity}).
 
 \section{Model and Methods}
 \label{sec:methods}
 
-This section builds the model in the order it is computed: the forecasting model, the
-seizure prior, the Bayesian posterior on forecast-safe days, the fatal-crash-risk model,
-the safety threshold, and the conversion to driving days.
+This section builds the model in the order it is computed: forecasting model, seizure
+prior, Bayesian posterior on forecast-safe days, fatal-crash-risk model, safety
+threshold, and conversion to driving days.
 
 \subsection{Binormal ROC Framework}
 \label{sec:binormal}
@@ -94,7 +94,7 @@ S \sim N(0, 1) \quad \text{on a non-seizure day}, \qquad
 S \sim N(m, 1) \quad \text{on a seizure day}.
 \label{eq:score-dist}
 \end{equation}
-Under this equal-variance binormal model, the separation $m$ is related to AUC by
+Under this equal-variance binormal model, the separation $m$ relates to AUC by
 \begin{equation}
 m = \sqrt{2}\;\Phi^{-1}(\mathrm{AUC}).
 \label{eq:m-auc}
@@ -122,9 +122,8 @@ tests robustness to alternative ROC shapes.
   \caption{\textbf{Binormal forecast model.} Score distributions on non-seizure days
   ($S\sim N(0,1)$, solid) and seizure days ($S\sim N(m,1)$, dashed). The threshold $t$
   (dotted vertical) defines the decision boundary; sensitivity (blue) and FPR (red) are
-  the probability masses to the right of $t$ under the seizure and non-seizure
-  distributions, respectively. The separation parameter $m$ relates to AUC via
-  Equation~\ref{eq:m-auc}.}
+  the probability masses right of $t$ under the seizure and non-seizure distributions.
+  Separation parameter $m$ relates to AUC via Equation~\ref{eq:m-auc}.}
   \label{fig:S1}
 \end{figure}
 
@@ -166,7 +165,7 @@ P(\text{seizure} \mid \text{forecast safe}) \;=\;
 \label{eq:bayes-1}
 \end{equation}
 
-The two conditional probabilities in (\ref{eq:bayes-1}) are obtained directly from
+We obtain the two conditional probabilities in (\ref{eq:bayes-1}) directly from
 sensitivity and FPR by complementation:
 \begin{align}
 P(\text{forecast safe} \mid \text{seizure})
@@ -192,8 +191,7 @@ P(\text{seizure} \mid \text{forecast safe})
 \label{sec:crash-risk}
 
 \paragraph{Parameters used in this subsection.}
-We use the parameters listed in Table~\ref{tab:params} throughout the crash-risk
-derivation.
+We use the parameters in Table~\ref{tab:params} throughout the crash-risk derivation.
 
 \begin{table}[h!]
 \caption{Crash-risk model parameters.}
@@ -220,8 +218,8 @@ $\pi$       & $P(\text{seizure} \mid \text{forecast safe})$
 \end{table}
 
 \paragraph{Baseline per-day fatal-crash risk.}
-Given $D$ hours of driving per day and a per-hour baseline rate $\lambda_f$, the
-per-day baseline fatal-crash risk for a sober driver is
+Given $D$ hours of driving per day and a per-hour baseline rate $\lambda_f$, a sober
+driver faces a per-day baseline fatal-crash risk of
 \begin{equation}
 B(D) \;=\; D \cdot \lambda_f.
 \label{eq:baseline-day}
@@ -241,28 +239,27 @@ minutes per driver per day, i.e.\ $\approx 29$ mph. Then
 \;\approx\; 4.5 \times 10^{-7}\,\text{hr}^{-1}.
 \label{eq:lambda-derivation}
 \end{equation}
-(FHWA Table VM-1 supplies the VMT denominator only; the driving speed used for the
-per-mile-to-per-hour conversion comes from the AAA survey.) Because this baseline
+(FHWA Table VM-1 supplies the VMT denominator only; the AAA survey provides driving
+speed for the per-mile-to-per-hour conversion.) Because this baseline
 incorporates all non-seizure causes of fatal crashes (distraction, weather, other
 drivers), the model conservatively attributes this background risk to every driving day
 regardless of seizure status.
 
 \paragraph{Seizure-day fatal-crash risk.}
 On a day when a seizure occurs, the per-day fatal-crash risk depends on whether the
-seizure happens to fall within the driving window. Assuming uniform seizure timing
-across the $24$-hour day,
+seizure falls within the driving window. Assuming uniform seizure timing across the
+$24$-hour day,
 \begin{equation}
 P(\text{fatal crash} \mid \text{seizure day})
 \;=\; \frac{D}{24}\cdot q_f \;+\; \left(1 - \frac{D}{24}\right)\cdot B(D).
 \label{eq:fatal-seiz-day}
 \end{equation}
-The first term is the contribution when the seizure happens while driving; the second
-is when the seizure happens outside driving hours and the day's driving carries only
-baseline risk.
+The first term captures seizures during driving; the second captures baseline risk when
+the seizure occurs outside driving hours.
 
 \paragraph{Forecast-safe-day fatal-crash risk.}
 Let $\pi = P(\text{seizure} \mid \text{forecast safe})$ from Equation~\ref{eq:posterior}.
-The residual fatal-crash risk on a forecast-safe day is
+On a forecast-safe day, residual fatal-crash risk is
 \begin{equation}
 P(\text{fatal crash} \mid \text{forecast safe})
 \;=\; \pi \cdot P(\text{fatal crash} \mid \text{seizure day})
@@ -319,25 +316,25 @@ $A$ is the \emph{amplification factor}.
 
 \paragraph{Exposure invariance.}
 The approximation (\ref{eq:rr-approx}) makes the $D$-dependence vanish: at $D = 1$ hr,
-the residual $D/24$ correction is at most $0.083\,\pi$ versus the dominant
+the residual $D/24$ correction reaches at most $0.083\,\pi$ versus the dominant
 $\sim 1852\,\pi$ (a relative discrepancy of order $5\times 10^{-5}$). Absolute fatal-crash
-risk does scale with driving exposure through $B(D)$, but the \emph{relative} risk
-against the BAC-anchored threshold is approximately invariant to $D$.
-Section~\ref{sec:duration} confirms this numerically.
+risk scales with driving exposure through $B(D)$, but the \emph{relative} risk against
+the BAC-anchored threshold remains approximately invariant to $D$.
+Section~\ref{sec:duration} confirms this invariance numerically.
 
 \subsection{Safety Threshold}
 \label{sec:threshold}
 
 We use a safety threshold derived from the BAC $0.05\%$ standard. Under the
-doubling-per-$0.02$-BAC parametric model of Zador et al.\ and Compton \& Berning, the
-relative fatal-crash risk at BAC $0.05\%$ is
+doubling-per-$0.02$-BAC model of Zador et al.\ and Compton \& Berning, the relative
+fatal-crash risk at BAC $0.05\%$ is
 \begin{equation}
 T \;=\; 2^{\,0.05/0.02} \;\approx\; 5.66,
 \label{eq:threshold}
 \end{equation}
-which is approximately $6\times$ baseline. The prose throughout this appendix describes
-this as a ``$6\times$ threshold'' for readability; the code uses the precise value
-$T = 2^{0.05/0.02}$. We find the operating threshold $t$ such that
+approximately $6\times$ baseline. Throughout this appendix we call this a
+``$6\times$ threshold'' for readability; the code uses the precise value
+$T = 2^{0.05/0.02}$. Given this threshold, we find the operating threshold $t$ such that
 \begin{equation}
 \frac{P(\text{fatal crash} \mid \text{forecast safe})}{B(D)} \;\le\; T,
 \label{eq:threshold-constraint}
@@ -357,11 +354,11 @@ P(\text{warning}) \;=\; \mathrm{Sensitivity}\cdot p + \mathrm{FPR}\cdot(1 - p),
 \text{Days in warning per year} \;=\; P(\text{warning}) \times 365.
 \label{eq:days-warning}
 \end{equation}
-The complement, $(1 - P(\text{warning}))\times 365$, is the number of days per year on
-which the patient is forecast safe to drive. An algorithm that warns every day achieves
-perfect sensitivity but permits zero driving days; the analysis finds, for each AUC, the
-operating threshold $t$ that just meets the safety constraint
-(\ref{eq:threshold-constraint}) and reports the resulting driving days.
+The complement, $(1 - P(\text{warning}))\times 365$, gives days per year the patient is
+forecast safe to drive. An algorithm that warns every day achieves perfect sensitivity
+but permits zero driving days; for each AUC, the analysis therefore finds the operating
+threshold $t$ that just meets the safety constraint (\ref{eq:threshold-constraint}) and
+reports the resulting driving days.
 
 \section{Main Result}
 \label{sec:main-result}
@@ -439,16 +436,14 @@ crosses the safety threshold.
 
 Three analyses test the robustness of the main result: to the most uncertain parameter
 ($q_f$, Section~\ref{sec:qf-sensitivity}), to driving duration
-(Section~\ref{sec:duration}), and to the shape of the ROC curve
-(Section~\ref{sec:roc-shape}).
+(Section~\ref{sec:duration}), and to ROC-curve shape (Section~\ref{sec:roc-shape}).
 
 \subsection{Conditional Fatal-Crash Probability $q_f$}
 \label{sec:qf-sensitivity}
 
 The parameter $q_f = P(\text{fatal crash} \mid \text{seizure while driving})$ is the
-most uncertain component of the model and is not directly reported by any single study;
-it is an inferred severity parameter. We examined the defensible range
-$q_f \in [0.005,\ 0.05]$:
+model's most uncertain component; no single study directly reports it, making it an
+inferred severity parameter. We examined the defensible range $q_f \in [0.005,\ 0.05]$:
 
 \begin{itemize}[leftmargin=2em,itemsep=2pt]
 \item \textbf{Lower bound ($q_f = 0.005$):} moderate crash rate ($\sim 0.30$) given a
@@ -494,20 +489,20 @@ ranges from $\approx 1.0\%$ down to $\approx 0.10\%$.
 \end{figure}
 
 \paragraph{Interpretation.}
-Across the full range, the qualitative finding is preserved: weekly-seizure patients
-cannot achieve unrestricted driving even at AUC $0.90$, and yearly-seizure patients
-remain at or near unrestricted driving. The quantitative allowance for monthly seizures
-spans roughly a factor of three. Stakeholders may prefer the conservative-end
-$q_f = 0.05$ until the parameter is better empirically anchored.
+Across the full range, the qualitative finding holds: weekly-seizure patients cannot
+achieve unrestricted driving even at AUC $0.90$, and yearly-seizure patients remain
+at or near unrestricted driving. The quantitative allowance for monthly seizures spans
+roughly a factor of three. Until empirical data better anchor the parameter,
+stakeholders may prefer the conservative-end $q_f = 0.05$.
 
 \subsection{Driving Duration (Exposure Invariance)}
 \label{sec:duration}
 
 Section~\ref{sec:crash-risk} shows analytically that relative risk is approximately
-invariant to driving duration $D$, because both the seizure-related and baseline
-fatal risks scale with exposure (Equation~\ref{eq:rr-approx}). Numerically, the driving-day
-allowances coincide to integer rounding across the examined durations
-(Table~\ref{tab:duration}).
+invariant to driving duration $D$, because both seizure-related and baseline fatal
+risks scale with exposure (Equation~\ref{eq:rr-approx}). This invariance also holds
+numerically: driving-day allowances coincide to integer rounding across the examined
+durations (Table~\ref{tab:duration}).
 
 \begin{table}[h!]
 \caption{Driving days/year coincide across exposure levels under the relative-risk
@@ -534,14 +529,14 @@ the allowable driving days.
 \label{sec:roc-shape}
 
 The equal-variance binormal assumption implies a specific sensitivity--specificity
-relationship. Real ROC curves can deviate due to unequal variances (S-shaped),
-mixture distributions (hooked; some seizures easier to predict than others), or
-finite-sample effects. We test three score-generating models, all calibrated to
-$\mathrm{AUC} \approx 0.90$.
+relationship. Real ROC curves can deviate from this relationship due to unequal
+variances (S-shaped), mixture distributions (hooked; some seizures easier to predict
+than others), or finite-sample effects. We test three score-generating models, all
+calibrated to $\mathrm{AUC} \approx 0.90$.
 
-\paragraph{Equal-variance binormal} (baseline): negatives $N(0,1)$, positives $N(m,1)$,
-with $m = \sqrt{2}\,\Phi^{-1}(0.90) \approx 1.81$. Sensitivity and FPR are given by
-Eqs.~(\ref{eq:sensitivity})--(\ref{eq:fpr}).
+\paragraph{Equal-variance binormal} (baseline): negatives follow $N(0,1)$ and positives
+follow $N(m,1)$, with $m = \sqrt{2}\,\Phi^{-1}(0.90) \approx 1.81$.
+Equations~(\ref{eq:sensitivity})--(\ref{eq:fpr}) give sensitivity and FPR.
 
 \paragraph{Unequal-variance binormal} (S-shaped): negatives $N(0,1)$, positives
 $N(\mu_1, \sigma_1)$ with $\mu_1 = 2.4$, $\sigma_1 = 1.4$. For threshold $t$,
@@ -551,12 +546,13 @@ $N(\mu_1, \sigma_1)$ with $\mu_1 = 2.4$, $\sigma_1 = 1.4$. For threshold $t$,
 \mathrm{FPR} \;=\; 1 - \Phi(t).
 \label{eq:unequal-var}
 \end{equation}
-The posterior on forecast-safe days uses $\Phi\!\left((t - \mu_1)/\sigma_1\right)$ in
-place of $\Phi(t - m)$ in Equation~\ref{eq:posterior}.
+On forecast-safe days, the posterior substitutes
+$\Phi\!\left((t - \mu_1)/\sigma_1\right)$ for $\Phi(t - m)$ in
+Equation~\ref{eq:posterior}.
 
 \paragraph{Mixture model} (hooked): negatives $N(0, 1)$, positives
 $w\,N(\mu_{\text{easy}}, 1) + (1 - w)\,N(\mu_{\text{hard}}, 1)$, with $w = 0.7$,
-$\mu_{\text{easy}} = 2.5$, $\mu_{\text{hard}} = 0.8$. Then
+$\mu_{\text{easy}} = 2.5$, $\mu_{\text{hard}} = 0.8$. From this mixture,
 \begin{equation}
 \mathrm{Sensitivity}
 \;=\; w\,[1 - \Phi(t - \mu_{\text{easy}})] \;+\; (1 - w)\,[1 - \Phi(t - \mu_{\text{hard}})],
@@ -571,15 +567,15 @@ P(S < t \mid \text{seizure})
 \begin{figure}[h!]
   \centering
   \includegraphics[width=0.55\textwidth]{Figure_S4.png}
-  \caption{\textbf{Three ROC curve shapes}, all at $\mathrm{AUROC} \approx 0.90$.
+  \caption{\textbf{Three ROC curve shapes}, all at $\mathrm{AUC} \approx 0.90$.
   Equal-variance binormal (black, central), unequal-variance/S-shaped (blue, top-left),
   and hooked mixture model (red).}
   \label{fig:S4}
 \end{figure}
 
 Table~\ref{tab:roc-shape} reports driving days at $\mathrm{AUC} \approx 0.90$ and
-$1$\,hr/day for each ROC shape. Figure~\ref{fig:S5} shows the crash-risk-versus-warning-days
-curves for each shape and seizure frequency.
+$1$\,hr/day for each ROC shape; Figure~\ref{fig:S5} shows the corresponding
+crash-risk-versus-warning-days curves across shapes and seizure frequencies.
 
 \begin{table}[h!]
 \caption{Driving days/year at $\mathrm{AUC} \approx 0.90$, $1$\,hr/day, by ROC shape.}
@@ -669,8 +665,8 @@ from this assumption.
 \section{Reproducibility}
 \label{sec:reproducibility}
 
-All calculations use NumPy, SciPy (\texttt{scipy.stats.norm} for the Gaussian
-CDF/inverse CDF), and Matplotlib, with analytic closed-form expressions.
+All calculations use closed-form expressions implemented with NumPy, SciPy
+(\texttt{scipy.stats.norm} for the Gaussian CDF/inverse CDF), and Matplotlib.
 
 \begin{verbatim}
 pip install numpy matplotlib scipy

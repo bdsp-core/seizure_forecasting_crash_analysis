@@ -1,0 +1,37 @@
+DRAFT REPLY TO ROZ (edit freely)
+
+Subject: Re: Driving paper - appendix
+
+Roz,
+
+You are right, and I am sorry. Running your comments back through an LLM and regenerating the appendix was the wrong way to do this. It changed text that did not need changing and forced you to re-read the whole document. I will not do that again.
+
+We have frozen the July 31 version into Word. The attached file contains only the fixes listed below, all as tracked changes under my name, so you can see exactly what moved. Nothing else was touched. We very much want you to stay on as an author, but that is your call and we will respect it either way.
+
+Your points, in order:
+
+1. Process. Covered above. Going forward, edits are made by hand in the Word file with tracking on.
+
+2. "Neither is needed again." Deleted.
+
+3. Recommendation 1. Restored to the June wording: "Aim for AUC >= 0.90 as a minimum for driving applications." Recommendation 2 was left alone.
+
+4. Table 6 numbers and mu_1. The June parameters for the S-shaped and hooked models were not actually at AUC 0.90. The S-shaped model (mu_1 = 2.4, sigma_1 = 1.4) sat at AUC 0.918, and the hooked model (means 2.5 and 0.8) at 0.887. On July 31, when we replaced the threshold-grid search with an exact root-find, we also recalibrated all three models to AUC 0.90 exactly, which is why mu_1 became 2.205 and the hooked means became 2.716 and 0.869. The S-shaped model lost some area, so its monthly allowance fell from 145 to 72 days; the hooked model gained area, so its allowance rose from 66 to 88. The equal-variance model was already exact and barely moved. You are right that this should have been explained at the time. The exact solver also shifts other entries by up to about a day (for example 182 became 183.2 for monthly seizures at AUC 0.90).
+
+   The vertical segment at the far right of Figure S5: that is the S-shaped (blue) curve, and it was in the June figure as well. With sigma_1 = 1.4 > 1, seizure-day scores are more spread out than non-seizure scores, so at very low scores seizure days actually outnumber non-seizure days. As days in warning approach 365, the handful of days still forecast safe are mostly seizure days, and the risk on those days shoots up. It only happens in the last fraction of a day. It is the same tail effect that prevents the S-shaped model from reaching the threshold for weekly seizures. I added one sentence in Section 4.3 saying so.
+
+5. The weekly-seizure sentence in 4.1. The sentence was technically true (155 days is not 365) but it reads as "cannot drive." It was in the June version too. It now gives the range: weekly-seizure patients remain heavily restricted at AUC 0.90, 20 to 155 driving days per year across the q_f range.
+
+6. The "misses concentrated in confident predictions" paragraph. Agreed, and it has nothing to do with the uniform-timing assumption. The paragraph is replaced by three sentences saying that the S-shaped failure is a property of the unequal-variance model: the heavier lower tail on seizure-day scores puts a floor on the residual seizure probability (0.0089 for weekly seizures) that sits above the ceiling (0.0025), so no threshold works. Developer recommendation 3, which repeated the same idea, is deleted.
+
+7. Section 6.1 item 4. Restored to the June wording: "For patients with frequent seizures, even AUC 0.90 may be insufficient for practical driving policies."
+
+8. Table 4. Added a "Driving exposure" header spanning the three columns.
+
+9. Key insights. The four June bullets are back verbatim. The only changes are three numbers that moved with the exact solver: 183 and 274 instead of 182 and 273 for monthly seizures, and 332 instead of 331 for yearly seizures at AUC 0.60.
+
+10. Section 2.6. Deleted. It existed to justify two corrections to the June version of Table 2, and both corrections are real: (a) the "Cannot reach safety threshold" entries at AUC 0.60 and 0.70 were an artifact of the grid search stopping at t = -10, when the true crossing for weekly seizures at AUC 0.60 is at t = -11.2. The threshold is met but permits about 10^-27 driving days, so the table now says "effectively never." (b) "Already safe" for yearly seizures at AUC 0.90 and above was wrong: driving every day gives a relative risk of 6.07, above the 5.66 threshold, so a small restriction (0.33 warning days per year) is still required. The table entries stand; the explanation is now one sentence in the Table 2 caption.
+
+Attached: appendix with tracked changes. Happy to send a clean copy as well if that is easier to read.
+
+Brandon

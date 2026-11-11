@@ -11,3 +11,7 @@
 *.fdb_latexmk
 *.fls
 *.synctex.gz
+
+# Python
+__pycache__/
+.ipynb_checkpoints/
